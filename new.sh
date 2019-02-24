@@ -58,3 +58,5 @@ function run() {
 # run args
 \$1
 EOF
+
+chmod +x $name.d/mds.sh
