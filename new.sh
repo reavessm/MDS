@@ -7,14 +7,28 @@ else
   name=$1
 fi
 
+function printError() {
+  ERROR='\033[1;31m'
+  NC='\033[0m'
+  echo -e "${ERROR}$1${NC}"
+}
+
+function print() {
+  GREEN='\033[1;32m'
+  NC='\033[0m'
+  echo -e "${GREEN}$1${NC}"
+}
+
 if [ -d $name.d ]
 then
-  echo "ERROR: Name already exists"
+  printError "ERROR: Name already exists"
   exit 1
 fi
 
+print "Making directory '$name.d'"
 mkdir $name.d
 
+print "Making file '$name.d/mds.sh'"
 cat > $name.d/mds.sh << EOF
 #!/bin/bash
 
@@ -60,3 +74,5 @@ function run() {
 EOF
 
 chmod +x $name.d/mds.sh
+
+print "Done"
