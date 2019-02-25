@@ -1,6 +1,6 @@
 #!/bin/bash
 
-conName="stephenreaves.com"
+conName="gitlab"
 conDB=""
 
 function print() {
@@ -32,9 +32,10 @@ function check() {
 function run() {
   check
 
-  docker run --name $conName -v \
-    /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro -d \
-    -p 80:80 nginx:alpine > /dev/null && print "Starting $conName"
+docker run --name $conName -d \
+  --hostname gitlab.stephenreaves.com \
+  gitlab/gitlab-ce:latest > /dev/null && print "Starting $conName"
+  #-p 8282:80 -p 82443:443 -p 8222:22 \
 }
 
 # run args

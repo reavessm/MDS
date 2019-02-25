@@ -27,3 +27,5 @@ $(TARGET) : % : %.d
 
 clean :
 	docker system prune -a
+
+all : $(DIR)

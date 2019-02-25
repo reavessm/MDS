@@ -58,11 +58,11 @@ function remove() {
 
 function check() {
   docker container list | grep \$conName > /dev/null && print \\
-    "\$conName already exists" || return 1
+    "\$conName already exists" && start
 }
 
 function run() {
-  check && start
+  check
 
   #docker run --name \$conName -v \\
   #  /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro -d \\

@@ -30,11 +30,11 @@ function remove() {
 
 function check() {
   docker container list | grep $conName >/dev/null && print \
-    "$conName already exists" || return 1
+    "$conName already exists" && start
 }
 
 function run() {
-  check && start
+  check
 
   read -p "Please enter keycloak username: " username
   read -s -p "Please enter keycloak password: " kPassword

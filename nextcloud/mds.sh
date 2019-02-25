@@ -1,6 +1,6 @@
 #!/bin/bash
 
-conName="stephenreaves.com"
+conName="nextcloud"
 conDB=""
 
 function print() {
@@ -32,9 +32,8 @@ function check() {
 function run() {
   check
 
-  docker run --name $conName -v \
-    /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro -d \
-    -p 80:80 nginx:alpine > /dev/null && print "Starting $conName"
+  docker run --name $conName -d -p 8181:80 nextcloud \
+    -v /mnt/VMStorage/NextCloud/:/var/www/html
 }
 
 # run args
