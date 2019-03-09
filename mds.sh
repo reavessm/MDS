@@ -194,5 +194,5 @@ function search() {
   new `awk -F "/" '{print $2,$0}' $newTmp` 2>/dev/null
 }
 
-[ "$1" == "new" ] && new
-[ "$1" == "search" ] && search
+[ "$1" == "new" ] && new || true
+[ "$1" == "search" ] && search || true
