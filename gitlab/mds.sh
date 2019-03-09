@@ -25,16 +25,16 @@ function remove() {
 }
 
 function check() {
-  docker container list | grep $conName > /dev/null && print \
+  docker ps -a | grep $conName > /dev/null && print \
     "$conName already exists" && start
 }
 
 function run() {
   check
 
-docker run --name $conName -d \
-  --hostname gitlab.stephenreaves.com \
+  docker run --name $conName -d \
   gitlab/gitlab-ce:latest > /dev/null && print "Starting $conName"
+  # --hostname gitlab.stephenreaves.com \
   #-p 8282:80 -p 82443:443 -p 8222:22 \
 }
 

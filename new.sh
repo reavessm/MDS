@@ -26,14 +26,14 @@ then
 fi
 
 print "Making directory '$name.d'"
-mkdir $name.d
+mkdir -p $name.d
 
 print "Making file '$name.d/mds.sh'"
 cat > $name.d/mds.sh << EOF
 #!/bin/bash
 
 conName="$name"
-conDB=""
+conDB="\$conName-DB"
 
 function print() {
   GREEN='\033[1;32m'
@@ -57,7 +57,7 @@ function remove() {
 }
 
 function check() {
-  docker container list | grep \$conName > /dev/null && print \\
+  docker ps -a | grep \$conName > /dev/null && print \\
     "\$conName already exists" && start
 }
 

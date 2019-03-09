@@ -1,41 +1,28 @@
 #!/bin/bash
 
+[ -f ../mds.sh ] && source ../mds.sh || exit 1
+
 conName="stephenreaves.com"
 conDB=""
+conNet=""
 
-function print() {
-  GREEN='\033[1;32m'
-  NC='\033[0m'
-  echo -e "${GREEN}$1${NC}"
-}
+conImg="nginx:alpine"
 
-function stop() {
-  docker stop $conName > /dev/null && print "Stopping $conName"
-}
+# Make sure you put a space at the beginning of every arg EXCEPT the first
+args="-d"
+args+=" -v /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro"
+args+=" -p 80:80"
 
-function start() {
-  docker start $conName > /dev/null && print "Starting $conName"
+#function run () {
+  #check
 
-  exit 0
-}
+  #docker run --name $conName \
+    #-v /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro -d \
+    #-p 80:80 \
+    #nginx:alpine >/dev/null && print "Starting $conName"
 
-function remove() {
-  stop
-  docker rm $conName > /dev/null && print "Removing $conName"
-}
+#}
 
-function check() {
-  docker container list | grep $conName > /dev/null && print \
-    "$conName already exists" && start
-}
-
-function run() {
-  check
-
-  docker run --name $conName -v \
-    /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro -d \
-    -p 80:80 nginx:alpine > /dev/null && print "Starting $conName"
-}
 
 # run args
 $1

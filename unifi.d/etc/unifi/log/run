@@ -1,0 +1,5 @@
+#!/bin/ash
+
+log_user='log'
+
+exec s6-setuidgid $log_user s6-log -b n20 s1000000 t /var/log/unifi

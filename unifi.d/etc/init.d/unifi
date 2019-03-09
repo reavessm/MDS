@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+name="unifi"
+supervisor=s6
+s6_service_path="${RC_SVCDIR}/s6-scan/${name}"
+
+depend() {
+        need net s6-svcscan
+        after firewall
+}
+
+start_pre() {
+        if [ ! -L "${RC_SVCDIR}/s6-scan/${name}" ]; then
+	              ln -s "/etc/${name}" "${RC_SVCDIR}/s6-scan/${name}"
+	      fi
+}

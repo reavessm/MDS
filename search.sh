@@ -1,7 +1,7 @@
 #!/bin/bash
 
-tmp="`mktemp`"
-newTmp="`mktemp`"
+tmp="/tmp/MDS-tmp"
+newTmp="/tmp/MDS-newTmp"
 
 if [ $# != 1 ]
 then
@@ -16,4 +16,4 @@ dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
 
 clear
 
-cat $newTmp | ./new.sh
+cat $newTmp | cut -d "/" -f2 | ./new.sh

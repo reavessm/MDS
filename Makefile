@@ -3,8 +3,8 @@
 # Written by: Stephen Reaves                                                    #
 #                                                                               #
 # Every Docker container should have it's own dir with the '.d' suffix.  Inside #
-# that dir, there should be mds.sh script that at least has a 'run' function.   #
-# From there, the mds.sh script should handle docker builds, runs, etc.         #
+# that dir, there should be mds.sh script that defines variables like the image.#
+# From there, the parent mds.sh script should handle docker builds, runs, etc.  #
 #################################################################################
 
 usage :
@@ -15,10 +15,10 @@ CMD="run"
 DIR = $(wildcard *.d)
 TARGET = $(DIR:.d=)
 
-.PHONY: $(DIR) $(TARGET) new clean
+.PHONY: $(DIR) $(TARGET) new clean search
 
-new :
-	@new.sh
+#new :
+	#@new.sh
 
 $(DIR) :
 	@(cd $@ && mds.sh $(CMD))
@@ -29,3 +29,12 @@ clean :
 	docker system prune -a
 
 all : $(DIR)
+
+list :
+	@docker ps -a | awk '/Up/ {print $$NF}'
+
+new :
+	@mds.sh new
+
+search :
+	@mds.sh search

@@ -1,57 +1,33 @@
 #!/bin/bash
 
+[ -f ../mds.sh ] && source ../mds.sh || exit 1
+
 conName="keycloak"
-conDB="mariadb"
+conDB="$conName-DB"
+conNet="$conName-net"
 
-function print() {
-  GREEN='\033[1;32m'
-  NC='\033[0m'
-  echo -e "${GREEN}$1${NC}"
-}
+conImg="jboss/keycloak"
+conDBImg="mariadb"
 
-function stop() {
-  docker stop $conName > /dev/null && print "Stopping $conName"
-  docker stop $conDB > /dev/null && print "Stopping $conDB"
-}
-
-function start() {
-  docker start $conDB > /dev/null && print "Starting $conDB"
-  docker start $conName > /dev/null && print "Starting $conName"
-
-  exit 0
-}
-
-function remove() {
-  stop
-  docker rm $conName > /dev/null && print "Removing $conName"
-  docker rm $conDB > /dev/null && print "Removing $conDB"
-  docker network rm $conName-network > /dev/null && print "Removing network"
-}
-
-function check() {
-  docker container list | grep $conName >/dev/null && print \
-    "$conName already exists" && start
-}
-
-function run() {
-  check
-
+if [ -z "`docker ps -a | grep $conName`" ]
+then
   read -p "Please enter keycloak username: " username
-  read -s -p "Please enter keycloak password: " kPassword
-  echo
+  read -s -p "Please enter keycloak password: " password \
+    && echo
+fi
 
-  docker network create $conName-network > /dev/null && print \
-    "Creating $conName network"
-  docker run -d --name $conDB --net $conName-network -e MYSQL_ROOT_PASSWORD=password \
-    -e MYSQL_DATABASE=keycloak -e MYSQL_USER=keycloak -e \
-    MYSQL_PASSWORD=password mariadb > /dev/null && print "Starting mariadb"
- 
-  nohup docker run --name $conName --net $conName-network -e KEYCLOAK_USER=$username \
-    -e KEYCLOAK_PASSWORD=$kPassword -p 8080:8080 jboss/keycloak & &> /dev/null \
-    && print "Starting $conName"
+args="-d"
+args+=" --net $conNet"
+args+=" -e KEYCLOAK_USER=$username"
+args+=" -e KEYCLOAK_PASSWORD=$password"
+args+=" -p 8082:8080"
 
-  disown
-}
+dbArgs="-d"
+dbArgs+=" --net $conNet"
+dbArgs+=" -e MYSQL_ROOT_PASSWORD=password"
+dbArgs+=" -e MYSQL_PASSWORD=password"
+dbArgs+=" -e MYSQL_USER=keycloak"
+dbArgs+=" -e MYSQL_DATABASE=keycloak"
 
 # run args
 $1

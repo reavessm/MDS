@@ -1,0 +1,6 @@
+*.orig
+*nohup.out
+*.swp
+*.key
+*.cert
+
