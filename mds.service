@@ -1,0 +1,14 @@
+[Unit]
+Description=My Docker Scripts
+After=network.target
+
+[Service]
+Type=simple
+User=reavessm
+WorkingDirectory=/home/reavessm/Src/MDS
+ExecStart=make -j all
+ExecStop=make CMD=stop -j all
+ExecReload=make CMD=restart -j all
+
+[Install]
+WantedBy=multi-use.target

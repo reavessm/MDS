@@ -13,7 +13,7 @@ RUN apk update \
   && apk add --no-cache openjdk8-jre mongodb s6 \
   && adduser -D -h /srv/unifi unifi \
   && cd /srv \
-  && wget http://www.ubnt.com/downloads/unifi/5.10.17/UniFi.unix.zip \
+  && wget http://www.ubnt.com/downloads/unifi/5.10.19/UniFi.unix.zip \
   && unzip UniFi.unix.zip \
   && chown unifi:unifi UniFi \
   && chmod o-rwx UniFi \

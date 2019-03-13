@@ -44,6 +44,11 @@ function start() {
   exit 0
 }
 
+function restart() {
+  stop
+  start
+}
+
 function remove() {
   stop
 
