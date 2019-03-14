@@ -17,9 +17,6 @@ TARGET = $(DIR:.d=)
 
 .PHONY: $(DIR) $(TARGET) new clean search
 
-#new :
-	#@new.sh
-
 $(DIR) :
 	@(cd $@ && mds.sh $(CMD))
 
@@ -31,7 +28,7 @@ clean :
 all : $(DIR)
 
 list :
-	@docker ps -a | awk '/Up/ {print $$NF}'
+	@dialog --title "Running services" --infobox "`docker ps -a | awk '/Up/ {print $$NF}'`" 0 0
 
 new :
 	@mds.sh new
