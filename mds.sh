@@ -140,6 +140,9 @@ conImg="$img"
 #conDBImg="mariadb"
 #conNet="\$conName-net"
 
+# Put the port you want to be made public to the load balancer
+#exposedPort=8082
+
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName
 #if [ -z \"\`docker ps -a | grep \$conName\`\" ]
