@@ -1,22 +1,26 @@
 #!/bin/bash
 
-# Get variables
-#args=`dialog --backtitle "Create proxy config" \
-  #--begin $(( $row - 20 )) $(( $col - 35 )) --inputbox "Enter domain name" 10 70 --stdout \
-  #--and-widget --begin $(( $row - 5 )) $(( $col - 35 )) --inputbox \
-  #"Enter subdomains and ports seperated by a colon ':'" 10 70 "one:80 two:443"` || exit
+if [ "$#" == "1" ]
+then
+  dom="$1"
+else
+  dom=`dialog --backtitle "Create proxy config" --inputbox "Enter domain name" \
+    0 0 --stdout`
+fi
 
-col=`echo $(( $(tput cols) / 2 ))`
-row=`echo $(( $(tput lines) / 2 ))`
-
-args=`dialog --backtitle "Create proxy config" \
-  --begin $(( $row - 20 )) $(( $col - 35 )) --inputbox "Enter domain name" 10 70 --stdout \
-  --and-widget --begin $(( $row - 5 )) $(( $col - 35 )) --inputbox \
-  "Enter subdomains and ports seperated by a colon ':'" 10 70 "one:80 two:443"` || exit
-
-dom=`echo $args | awk '{print $1}'`
-subs=`echo $args | awk '{$1=""; print}'`
 file="nginx.conf"
+
+# Don't change this
+subs=""
+
+for f in ../*/mds.sh
+do
+  if [ `grep exposedPort $f` ]
+  then
+    subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
+      '/exposedPort/ {print $2}' $f` "
+  fi
+done
 
 # Basic stuff
 cat > $file <<EOF

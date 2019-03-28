@@ -8,6 +8,8 @@ conNet=""
 
 conImg="nginx:alpine"
 
+exposedPort=8083
+
 # Make sure you put a space at the beginning of every arg EXCEPT the first
 args="-d"
 args+=" -v /mnt/Websites/stephenreaves.com/www/html/:/usr/share/nginx/html:ro"

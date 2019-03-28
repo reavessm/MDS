@@ -9,6 +9,8 @@ conNet="$conName-net"
 conImg="jboss/keycloak"
 conDBImg="mariadb"
 
+exposedPort=8082
+
 if [ -z "`docker ps -a | grep $conName`" ]
 then
   read -p "Please enter keycloak username: " username

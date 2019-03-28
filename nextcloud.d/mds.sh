@@ -9,6 +9,8 @@ conNet="$conName-net"
 conImg="nextcloud"
 conDBImg="mariadb"
 
+exposedPort=8081
+
 if [ -z "`docker ps -a | grep $conName`" ]
 then
   read -p "Please enter $conName username: " username
