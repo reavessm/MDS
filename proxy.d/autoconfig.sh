@@ -10,12 +10,13 @@ fi
 
 file="nginx.conf"
 
-# Don't change this
-subs=""
+# Make sure website goes first
+subs="website:`awk -F '=' '/exposedPort/ {print $2}' ../website.d/mds.sh` "
 
 for f in ../*/mds.sh
 do
-  if [ `grep exposedPort $f` ]
+  # Don't reinsert website
+  if [[ `grep exposedPort $f` && "`echo $f | awk -F '/' '{print $2}'`" != "website.d" ]]
   then
     subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
       '/exposedPort/ {print $2}' $f` "
