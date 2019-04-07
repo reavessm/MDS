@@ -69,7 +69,7 @@ function check() {
 }
 
 function build() {
-  [ -f ./Dockerfile ] && docker build -t $conName . && \
+  [ -f ./Dockerfile ] && docker build --no-cache -t $conName . && \
     print "Building $conName"
 }
 
@@ -190,9 +190,8 @@ function search() {
 	  name=$1
 	fi
 	
-  # Fucking magic, don't touch this
-	docker search "$name" | tail -n+2 | awk \
-	  '{$NF=$(NF-1)=""; $1 = $1"\t"; $2 = "\""$2; $(NF-2) = $(NF-2)"\""; print}' > $tmp 
+  docker search --format "{{.Name}} \"{{.Description}}\"" "$name" | sed \
+    's/\"\"/\"N\/A\"/g' > $tmp
 	
 	dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
 	
