@@ -23,6 +23,7 @@ args+=" --net $conNet"
 args+=" -e KEYCLOAK_USER=$username"
 args+=" -e KEYCLOAK_PASSWORD=$password"
 args+=" -p 8082:8080"
+args+=" -e PROXY_ADDRESS_FORWARDING=true"
 
 dbArgs="-d"
 dbArgs+=" --net $conNet"
