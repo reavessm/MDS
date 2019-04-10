@@ -145,7 +145,7 @@ conImg="$img"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName
-#if [ -z \"\`docker ps -a | grep \$conName\`\" ]
+#if [ -z "\`docker ps -a | grep \$conName\`" ]
 #then
 #  read -p "Please enter keycloak username: " username
 #  read -s -p "Please enter keycloak password: " password \\
@@ -154,7 +154,7 @@ conImg="$img"
 
 # These are the args passed to the \`docker run\` command.  Make sure all args
 # EXCEPT for the first one start with a space
-#args="-d"
+args="-d"
 #args+=" --net \$conNet"
 #args+=" -e KEYCLOAK_USER=\$username"
 #args+=" -e KEYCLOAK_PASSWORD=\$password"
