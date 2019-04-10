@@ -3,4 +3,5 @@
 *.swp
 *.key
 *.cert
-
+*.ini
+proxy.d/config/*
