@@ -220,6 +220,9 @@ function init() {
   done
   
   (cd proxy.d/ && ./autoconfig.sh)
+
+  # I know this makes proxy twice, but deal with it
+  make proxy && make all
 }
 
 # Only allow certain options
