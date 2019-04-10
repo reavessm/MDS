@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name
-conName="gitlab-ce"
+conName="couchpotato"
 
 # You must specify a container image
-conImg="gitlab/gitlab-ce"
+conImg="linuxserver/couchpotato"
 
 # If your container does not need a separate DB or network, leave these
 # commented out
@@ -42,11 +42,11 @@ conImg="gitlab/gitlab-ce"
 
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space
-args="-d"
+#args="-d"
 #args+=" --net $conNet"
 #args+=" -e KEYCLOAK_USER=$username"
 #args+=" -e KEYCLOAK_PASSWORD=$password"
-args+=" -p 8084:80"
+#args+=" -p 8082:8080"
 
 # These are the args passed to the `docker run` command for the DB, if conDB is
 # not blank.  Make sure all args EXCEPT for the first one start with a space
