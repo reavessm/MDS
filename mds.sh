@@ -11,6 +11,7 @@
 
 declare -a args
 declare -a DBArgs
+contName=
 
 function print() {
   GREEN='\033[1;32m'
@@ -185,7 +186,9 @@ function search() {
 	
 	if [ $# != 1 ]
 	then
-	  read -p "Please enter the name of the container to search for: " name
+	  #read -p "Please enter the name of the container to search for: " name
+    name="`dialog --stdout --inputbox \
+      'Please enter the name of the container to search for' 0 0`"
 	else
 	  name=$1
 	fi
@@ -196,10 +199,30 @@ function search() {
 	dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
 	
 	clear
+
+  contName="`awk -F "/" '{print $2}' $newTmp`"
+
 	
   # Fucking magic, don't touch this
   new `awk -F "/" '{print $2,$0}' $newTmp` 2>/dev/null
 }
 
+function init() {
+  dialog --stdout --yesno 'Would you like to add containers now?' 0 0
+  ans="$?"
+
+  while [[ "$ans" == "0" ]]
+  do
+    search
+    ${EDITOR:-vim} "$contName.d/mds.sh"
+    dialog --stdout --yesno 'Would you like to add another container?' 0 0
+    ans="$?"
+  done
+  
+  (cd proxy.d/ && ./autoconfig.sh)
+}
+
+# Only allow certain options
 [ "$1" == "new" ] && new || true
+[ "$1" == "init" ] && init || true
 [ "$1" == "search" ] && search || true
