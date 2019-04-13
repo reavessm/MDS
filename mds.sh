@@ -74,9 +74,20 @@ function build() {
     print "Building $conName"
 }
 
+# Empty functions to be hooked by contianer mds
+# Although they can't be really empty or bash yells at me
+function preconfig() { 
+  print "Nothing to do for preconfig"
+}
+function postconfig() { 
+  print "Nothing to do for postconfig"
+}
+
 function run() {
   check
   build
+
+  preconfig
 
   [ -n "$conNet" ] && docker network create $conNet >/dev/null && \
     print "Creating $conNet network"
@@ -86,6 +97,8 @@ function run() {
 
   docker run --name $conName $args "$conImg" &>/dev/null && \
     print "Starting $conName"
+
+  postconfig
 
   printRed "$conName is running!"
 }
