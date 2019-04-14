@@ -272,8 +272,16 @@ function init() {
   make proxy && make all
 }
 
+function proxyReset() {
+  (cd proxy.d && autoconfig.sh)
+
+  make CMD=remove proxy &>/dev/null
+  make proxy &>/dev/null
+}
+
 # Only allow certain options
 [ "$1" == "new" ] && new || true
 [ "$1" == "init" ] && init || true
 [ "$1" == "search" ] && search || true
 [ "$1" == "checkPorts" ] && checkPorts || true
+[ "$1" == "proxyReset" ] && proxyReset || true
