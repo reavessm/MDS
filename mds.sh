@@ -26,6 +26,11 @@ function printRed() {
   echo -e "${RED}$1${NC}"
 }
 
+# This function lists all the exposed ports currently in use
+function checkPorts() {
+  awk -F '=' '/exposedPort/ {print $2}' *.d/mds.sh
+}
+
 function stop() {
   docker stop $conName >/dev/null && print "Stopping $conName"
 
