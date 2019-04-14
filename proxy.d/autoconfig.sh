@@ -11,7 +11,7 @@ else
 fi
 
 file="config/nginx/site-confs/default"
-rm "$file"
+rm -f "$file"
 
 # Make sure website goes first
 subs="website:`awk -F '=' '/exposedPort/ {print $2}' ../website.d/mds.sh` "
@@ -32,7 +32,7 @@ for sub in $subs
 do
   name="`echo ${sub} | cut -d ':' -f1`"
   port="`echo ${sub} | cut -d ':' -f2`"
-  if [[ -f ../${name}.d/mds.sh && `grep conIP ../${name}.d/mds.sh` ]]
+  if [[ -f ../${name}.d/mds.sh && `grep conIP ../${name}.d/mds.sh | grep -v '#'` ]]
   then
     cat >> $file <<EOF
 upstream ${name}_server {
