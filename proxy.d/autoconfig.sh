@@ -1,5 +1,7 @@
 #!/bin/bash
 
+hostIP="`ip route get 1 | awk '{print $(NF-2);exit}'`"
+
 if [ "$#" == "1" ]
 then
   dom="$1"
@@ -29,13 +31,23 @@ done
 for sub in $subs
 do
   name="`echo ${sub} | cut -d ':' -f1`"
-  ip="`echo ${sub} | cut -d ':' -f2`"
+  port="`echo ${sub} | cut -d ':' -f2`"
+  if [[ -f ../${name}.d/mds.sh && `grep conIP ../${name}.d/mds.sh` ]]
+  then
+    cat >> $file <<EOF
+upstream ${name}_server {
+  server `awk -F '=' '/conIP/ {print $2}' ../${name}.d/mds.sh`:${port};
+}
+
+EOF
+  else
   cat >> $file <<EOF
 upstream ${name}_server {
-    server 192.168.0.3:${ip};
+    server ${hostIP}:${port};
 } 
 
 EOF
+  fi
 done
 
 # Basic stuff

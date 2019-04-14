@@ -12,6 +12,7 @@
 declare -a args
 declare -a DBArgs
 contName=
+hostIP="`ip route get 1 | awk '{print $(NF-2);exit}'`"
 
 function print() {
   GREEN='\033[1;32m'
@@ -156,6 +157,10 @@ conImg="$img"
 
 # Put the port you want to be made public to the load balancer
 #exposedPort=8082
+
+# Put the IP of the host of the vm if not managed by MDS
+# Normally, it's safe to ignore this
+#conIP=192.168.0.0
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName
