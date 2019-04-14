@@ -28,7 +28,10 @@ function printRed() {
 
 # This function lists all the exposed ports currently in use
 function checkPorts() {
-  awk -F '=' '/exposedPort/ {print $2}' *.d/mds.sh
+   for port in `awk -F '=' '/exposedPort/ {print $2}' *.d/mds.sh | sort`
+  do      
+    echo "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
+  done
 }
 
 function stop() {
@@ -273,3 +276,4 @@ function init() {
 [ "$1" == "new" ] && new || true
 [ "$1" == "init" ] && init || true
 [ "$1" == "search" ] && search || true
+[ "$1" == "checkPorts" ] && checkPorts || true

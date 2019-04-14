@@ -30,6 +30,9 @@ all : $(DIR)
 list :
 	@dialog --title "Running services" --infobox "`docker ps -a | awk '/Up/ {print $$NF}'`" 0 0
 
+checkPorts :
+	@dialog --title "Used Ports" --infobox "`mds.sh checkPorts`" 0 0
+
 new :
 	@mds.sh new
 
