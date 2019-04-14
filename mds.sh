@@ -188,6 +188,22 @@ args="-d"
 #dbArgs+=" -e MYSQL_USER=keycloak"
 #dbArgs+=" -e MYSQL_DATABASE=keycloak"
 
+# Uncomment this to run commands before the \`docker run\` command.  These
+# commands will run only on the first run.
+#function preconfig() {
+#  print "Doing something before run ..."
+#  echo Something
+#  printRed "Done something for $conName!"
+#}
+
+# Uncomment this to run commands after the \`docker run\` command.  These
+# commands will run only on the first run.
+#function postconfig() {
+#  print "Doing after before run ..."
+#  echo Something
+#  printRed "Done something for $conName!"
+#}
+
 # Run args.  Do not delete this deceptively simple command
 \$1
 EOF
