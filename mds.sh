@@ -239,11 +239,16 @@ function search() {
 	
 	clear
 
-  contName="`awk -F "/" '{print $2}' $newTmp`"
-
-	
-  # Fucking magic, don't touch this
-  new `awk -F "/" '{print $2,$0}' $newTmp` 2>/dev/null
+  # Set contName for init script and pass name and conImg to new script
+  # Official images don't have a '/' ...
+  if [[ `grep "/" $newTmp` ]]
+  then
+    contName="`awk -F "/" '{print $2}' $newTmp`"
+    new `awk -F "/" '{print $2,$0}' $newTmp` 2>/dev/null
+  else
+    contName="`cat $newTmp`"
+    new `awk '{print $0,$0}' $newTmp` 2>/dev/null
+  fi
 }
 
 function init() {
