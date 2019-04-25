@@ -33,6 +33,9 @@ list :
 checkPorts :
 	@dialog --title "Used Ports" --infobox "`mds.sh checkPorts`" 0 0
 
+proxyReset :
+	@mds.sh proxyReset
+
 new :
 	@mds.sh new
 
