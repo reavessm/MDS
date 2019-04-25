@@ -60,8 +60,6 @@ function restart() {
 }
 
 function remove() {
-  stop
-
   docker rm $conName >/dev/null && print "Removing $conName"
 
   [ -n "$conDB" ] && docker rm $conDB >/dev/null && \
@@ -69,6 +67,13 @@ function remove() {
 
   [ -n "$conNet" ] && docker network rm $conNet >/dev/null && \
     print "Removing $conNet network"
+}
+
+# Take care not to overwrite this function.  Overwrite 'remove' instead
+function superRemove() {
+  stop
+
+  remove
 
   printRed "$conName Removed"
 }
@@ -93,11 +98,6 @@ function postconfig() {
 }
 
 function run() {
-  check
-  build
-
-  preconfig
-
   [ -n "$conNet" ] && docker network create $conNet >/dev/null && \
     print "Creating $conNet network"
 
@@ -106,6 +106,16 @@ function run() {
 
   docker run --name $conName $args "$conImg" &>/dev/null && \
     print "Starting $conName"
+}
+
+# Take care not to overwrite this function.  Overwrite 'run' instead
+function superRun() {
+  check
+  build
+
+  preconfig
+
+  run
 
   postconfig
 
