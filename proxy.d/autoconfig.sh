@@ -2,12 +2,17 @@
 
 hostIP="`ip route get 1 | awk '{print $(NF-2);exit}'`"
 
-if [ "$#" == "1" ]
+if [ -f "domain.txt" ]
 then
-  dom="$1"
+  dom="`cat domain.txt`"
 else
-  dom=`dialog --backtitle "Create proxy config" --inputbox "Enter domain name" \
-    0 0 --stdout`
+	if [ "$#" == "1" ]
+	then
+	  dom="$1"
+	else
+	  dom=`dialog --backtitle "Create proxy config" --inputbox "Enter domain name" \
+	    0 0 --stdout`
+	fi
 fi
 
 file="config/nginx/site-confs/default"
@@ -113,6 +118,7 @@ server {
     location / {
         proxy_pass http://${name}_server;
           
+        proxy_set_header Referer           "";
         proxy_set_header Host              \$host;
         proxy_set_header X-Real-IP         \$remote_addr;
         proxy_set_header X-Forwarded-For   \$proxy_add_x_forwarded_for;
