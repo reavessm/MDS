@@ -59,7 +59,7 @@ function restart() {
   start
 }
 
-function remove() {
+function superRemove() {
   docker rm $conName >/dev/null && print "Removing $conName"
 
   [ -n "$conDB" ] && docker rm $conDB >/dev/null && \
@@ -70,16 +70,16 @@ function remove() {
 }
 
 # Take care not to overwrite this function.  Overwrite 'remove' instead
-function superRemove() {
+function remove() {
   stop
 
-  remove
+  superRemove
 
   printRed "$conName Removed"
 }
 
 function check() {
-  docker ps -a | grep $conName > /dev/null && print \
+  docker ps -a | awk '{print $NF}' | grep -x $conName > /dev/null && print \
     "$conName already exists" && start
 }
 
@@ -97,7 +97,7 @@ function postconfig() {
   print "Nothing to do for postconfig"
 }
 
-function run() {
+function superRun() {
   [ -n "$conNet" ] && docker network create $conNet >/dev/null && \
     print "Creating $conNet network"
 
@@ -109,13 +109,13 @@ function run() {
 }
 
 # Take care not to overwrite this function.  Overwrite 'run' instead
-function superRun() {
+function run() {
   check
   build
 
   preconfig
 
-  run
+  superRun
 
   postconfig
 
@@ -182,7 +182,7 @@ conImg="$img"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName
-#if [ -z "\`docker ps -a | grep \$conName\`" ]
+#if [ -z "\`docker ps -a | awk '{print \$NF}' | grep -x \$conName\`" ]
 #then
 #  read -p "Please enter keycloak username: " username
 #  read -s -p "Please enter keycloak password: " password \\
