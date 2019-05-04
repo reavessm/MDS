@@ -7,3 +7,4 @@
 proxy.d/config/*
 *gitlab.yml
 *gitlab.rb
+domain.txt
