@@ -228,6 +228,8 @@ EOF
 	
 	# Make executable
 	chmod +x $name.d/mds.sh
+
+  ${EDITOR:-vim} $name.d/mds.sh
 	
 	printRed "Done"
 }
@@ -271,7 +273,7 @@ function init() {
   while [[ "$ans" == "0" ]]
   do
     search
-    ${EDITOR:-vim} "$contName.d/mds.sh"
+    #${EDITOR:-vim} "$contName.d/mds.sh" # Handled by new
     dialog --stdout --yesno 'Would you like to add another container?' 0 0
     ans="$?"
   done
