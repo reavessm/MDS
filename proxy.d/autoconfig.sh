@@ -19,15 +19,15 @@ file="config/nginx/site-confs/default"
 rm -f "$file"
 
 # Make sure website goes first
-subs="website:`awk -F '=' '/exposedPort/ {print $2}' ../website.d/mds.sh` "
+subs="website:`awk -F '=' '/^exposedPort/ {print $2}' ../website.d/mds.sh` "
 
 for f in ../*/mds.sh
 do
   # Don't reinsert website
-  if [[ `grep exposedPort $f` && "`echo $f | awk -F '/' '{print $2}'`" != "website.d" ]]
+  if [[ `grep -E ^exposedPort $f` && "`echo $f | awk -F '/' '{print $2}'`" != "website.d" ]]
   then
     subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
-      '/exposedPort/ {print $2}' $f` "
+      '/^exposedPort/ {print $2}' $f` "
   fi
 done
 

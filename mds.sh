@@ -28,7 +28,7 @@ function printRed() {
 
 # This function lists all the exposed ports currently in use
 function checkPorts() {
-   for port in `awk -F '=' '/exposedPort/ {print $2}' *.d/mds.sh | sort`
+   for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
   do      
     echo "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
   done
