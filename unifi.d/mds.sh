@@ -17,45 +17,32 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name
-conName="gitlab-ce"
+#conName="unifi-controller"
 
 # You must specify a container image
-conImg="gitlab/gitlab-ce"
-
-# If your container does not need a separate DB or network, leave these
-# commented out
-#conDB="$conName-DB"
-#conDBImg="mariadb"
-#conNet="$conName-net"
+#conImg="linuxserver/unifi-controller"
 
 # Put the port you want to be made public to the load balancer
-#exposedPort=8082
+exposedPort=8443
 
-# Use this block to prompt for usernames and passwords, but only if there is
-# no container named conName
-#if [ -z \"`docker ps -a | grep $conName`\" ]
-#then
-#  read -p "Please enter keycloak username: " username
-#  read -s -p "Please enter keycloak password: " password \
-#    && echo
-#fi
+useHTTPS=true
+
+conIP=192.168.0.99
 
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space
-args="-d"
-#args+=" --net $conNet"
-#args+=" -e KEYCLOAK_USER=$username"
-#args+=" -e KEYCLOAK_PASSWORD=$password"
-args+=" -p 8084:80"
-
-# These are the args passed to the `docker run` command for the DB, if conDB is
-# not blank.  Make sure all args EXCEPT for the first one start with a space
-#dbArgs="-d"
-#dbArgs+=" --net $conNet"
-#dbArgs+=" -e MYSQL_ROOT_PASSWORD=password"
-#dbArgs+=" -e MYSQL_PASSWORD=password"
-#dbArgs+=" -e MYSQL_USER=keycloak"
-#dbArgs+=" -e MYSQL_DATABASE=keycloak"
+#args="-d"
+#args+=" -e PUID=1001"
+#args+=" -e GUID=1000"
+#args+=" -p 3478:3478/udp"
+#args+=" -p 10001:10001/udp"
+#args+=" -p 8080:8080"
+#args+=" -p 8581:8081"
+#args+=" -p 8443:8443"
+#args+=" -p 8843:8843"
+#args+=" -p 8880:8880"
+#args+=" -p 6789:6789"
+#args+=" -v <path to data>:/config"
 
 # Run args.  Do not delete this deceptively simple command
 $1
