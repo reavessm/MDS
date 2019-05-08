@@ -21,13 +21,19 @@ rm -f "$file"
 # Make sure website goes first
 subs="website:`awk -F '=' '/^exposedPort/ {print $2}' ../website.d/mds.sh` "
 
-for f in ../*/mds.sh
+for f in ../*.d/mds.sh
 do
   # Don't reinsert website
   if [[ `grep -E ^exposedPort $f` && "`echo $f | awk -F '/' '{print $2}'`" != "website.d" ]]
   then
-    subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
-      '/^exposedPort/ {print $2}' $f` "
+    if [[ "`awk -F '=' '/^useHTTPS/ {print $2}' $f`" == "true" ]]
+    then
+      subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
+        '/^exposedPort/ {print $2}' $f`:s "
+    else
+      subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
+        '/^exposedPort/ {print $2}' $f` "
+    fi
   fi
 done
 
@@ -108,7 +114,30 @@ EOF
 for sub in $subs
 do
   name="`echo ${sub} | cut -d ':' -f1`"
-  cat >> $file <<EOF
+  if [ "`echo ${sub} | cut -d ':' -f3`" == "s" ]
+  then
+    cat >> $file <<EOF
+server {
+    listen 443;
+    listen [::]:443;
+    allow  all;
+    server_name ${name}.${dom} www.${name}.${dom} ${name}.*;
+
+    location / {
+        proxy_pass https://${name}_server;
+          
+        proxy_set_header Referer           "";
+        proxy_set_header Host              \$host;
+        proxy_set_header X-Real-IP         \$remote_addr;
+        proxy_set_header X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host  \$server_name;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+
+EOF
+  else
+    cat >> $file <<EOF
 server {
     listen 443;
     listen [::]:443;
@@ -128,4 +157,5 @@ server {
 }
 
 EOF
+  fi
 done 
