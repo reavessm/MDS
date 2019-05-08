@@ -26,6 +26,16 @@ function printRed() {
   echo -e "${RED}$1${NC}"
 }
 
+function clean() {
+  for f in *
+  do
+    if [ -d $f ]
+    then
+      [[ $f != "proxy.d" ]] && rm -rf $f
+    fi
+  done
+}
+
 # This function lists all the exposed ports currently in use
 function checkPorts() {
    for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
@@ -294,6 +304,7 @@ function proxyReset() {
 # Only allow certain options
 [ "$1" == "new" ] && new || true
 [ "$1" == "init" ] && init || true
+[ "$1" == "clean" ] && clean || true
 [ "$1" == "search" ] && search || true
 [ "$1" == "checkPorts" ] && checkPorts || true
 [ "$1" == "proxyReset" ] && proxyReset || true
