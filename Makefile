@@ -24,6 +24,7 @@ $(TARGET) : % : %.d
 
 clean :
 	docker system prune -a
+	./mds.sh clean
 
 all : $(DIR)
 
