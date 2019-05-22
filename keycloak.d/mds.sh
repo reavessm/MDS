@@ -24,6 +24,7 @@ args+=" -e KEYCLOAK_USER=$username"
 args+=" -e KEYCLOAK_PASSWORD=$password"
 args+=" -p 8082:8080"
 args+=" -e PROXY_ADDRESS_FORWARDING=true"
+#args+=" -v /mnt/VMStorage/Keycloak/Data:/"
 
 dbArgs="-d"
 dbArgs+=" --net $conNet"
@@ -31,6 +32,7 @@ dbArgs+=" -e MYSQL_ROOT_PASSWORD=password"
 dbArgs+=" -e MYSQL_PASSWORD=password"
 dbArgs+=" -e MYSQL_USER=keycloak"
 dbArgs+=" -e MYSQL_DATABASE=keycloak"
+dbArgs+=" -v /mnt/VMStorage/Keycloak/Mysql:/var/lib/mysql"
 
 # run args
 $1
