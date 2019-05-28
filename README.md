@@ -39,3 +39,16 @@ Starting all the containers in parellel
 Searching for a new contianer image
 
 ![make search](screenshots/makeSearch.png) 
+
+## Examples
+
+### Nextcloud
+
+1. Configure your DNS.  You should only need two records, 'domain.com' and '\*.domain.com', both pointing to your host.
+1. `git clone https://github.com/reavessm/MDS.git && cd MDS`
+1. `make search nextcloud`
+1. Change the 'exposedPort' variable to be the port you want open on your machine. This should be whatever you map to port 80 on Nextcloud.
+    * Optionally, you can change any of the other 'args'.  There's is a lot of unnecessary '-e' flags, so have fun with that.
+1. exit vim ('<Esc>:wq', or '<Esc>:x', or '<Esc>ZZ')
+1. `make proxyReset`
+1. In a web browswer, go to 'nextcloud.domain.com'
