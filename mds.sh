@@ -204,7 +204,7 @@ conImg="$img"
 args="-d"
 EOF
 
-docker pull $img
+dialog --prgbox "Pulling Image" "docker pull $img" 50 80
 
 for port in `docker image inspect -f '{{.Config.ExposedPorts}}' $img \
   | sed 's/[^[:digit:][:space:]]//g'`
