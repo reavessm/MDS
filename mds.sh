@@ -26,19 +26,9 @@ function printRed() {
   echo -e "${RED}$1${NC}"
 }
 
-function clean() {
-  for f in *
-  do
-    if [ -d $f ]
-    then
-      [[ $f != "proxy.d" ]] && rm -rf $f
-    fi
-  done
-}
-
 # This function lists all the exposed ports currently in use
 function checkPorts() {
-   for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
+  for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
   do      
     echo "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
   done
@@ -56,7 +46,7 @@ function stop() {
 function start() {
   [ -n "$conDB" ] && docker start $conDB >/dev/null && \
     print "Starting $conDB"
-  
+
   docker start $conName >/dev/null && print "Starting $conName"
 
   printRed "$conName Started"
@@ -133,26 +123,26 @@ function run() {
 }
 
 function new() {
-	if [ $# != 2 ] 
-	then
-	  read -p "Please enter the name of the service: " name
+  if [ $# != 2 ] 
+  then
+    read -p "Please enter the name of the service: " name
     img=$name
-	else
-	  name="$1"
+  else
+    name="$1"
     img="$2"
-	fi
-	
-	if [ -d $name.d ]
-	then
-	  printRed "ERROR: Name already exists"
-	  exit 1
-	fi
-	
-	print "Making directory '$name.d'"
-	mkdir -p $name.d
-	
-	print "Making file '$name.d/mds.sh'"
-	cat > $name.d/mds.sh << EOF
+  fi
+
+  if [ -d $name.d ]
+  then
+    printRed "ERROR: Name already exists"
+    exit 1
+  fi
+
+  print "Making directory '$name.d'"
+  mkdir -p $name.d
+
+  print "Making file '$name.d/mds.sh'"
+  cat > $name.d/mds.sh << EOF
 #!/bin/bash
 
 ###############################################################################
@@ -194,18 +184,46 @@ conImg="$img"
 # no container named conName
 #if [ -z "\`docker ps -a | awk '{print \$NF}' | grep -x \$conName\`" ]
 #then
-#  read -p "Please enter keycloak username: " username
-#  read -s -p "Please enter keycloak password: " password \\
+#  read -p "Please enter \$conName username: " username
+#  read -s -p "Please enter \$conName password: " password \\
 #    && echo
 #fi
 
 # These are the args passed to the \`docker run\` command.  Make sure all args
 # EXCEPT for the first one start with a space
 args="-d"
+EOF
+
+docker pull $img
+
+for port in `docker image inspect -f '{{.Config.ExposedPorts}}' $img \
+  | sed 's/[^[:digit:][:space:]]//g'`
+do
+  echo "args+=\" -p $port:$port\"" >> $name.d/mds.sh
+done
+
+for vol in `docker image inspect -f '{{.Config.Volumes}}' $img \
+  | sed 's/map\[\|\]//g' | awk -F ':' '{print $1}'`
+do
+  echo "args+=\" -v $vol:$vol\"" >> $name.d/mds.sh
+done
+
+# Most of these are completely unnecessary, but I'll leave that up to the user
+# to decide.
+for env in `docker image inspect -f '{{.Config.Env}}' $img \
+  | sed 's/\[\|\]//g'`
+do
+  echo "args+=\" -e $env\"" >> $name.d/mds.sh
+done
+
+cat >> $name.d/mds.sh << EOF
+
+# If you need to group things in a network
 #args+=" --net \$conNet"
+
+# If you need a specific username and password
 #args+=" -e KEYCLOAK_USER=\$username"
 #args+=" -e KEYCLOAK_PASSWORD=\$password"
-#args+=" -p 8082:8080"
 
 # These are the args passed to the \`docker run\` command for the DB, if conDB is
 # not blank.  Make sure all args EXCEPT for the first one start with a space
@@ -235,34 +253,34 @@ args="-d"
 # Run args.  Do not delete this deceptively simple command
 \$1
 EOF
-	
-	# Make executable
-	chmod +x $name.d/mds.sh
+
+  # Make executable
+  chmod +x $name.d/mds.sh
 
   ${EDITOR:-vim} $name.d/mds.sh
-	
-	printRed "Done"
+
+  printRed "Done"
 }
 
 function search() {
-	tmp="/tmp/MDS-tmp"
-	newTmp="/tmp/MDS-newTmp"
-	
-	if [ $# != 1 ]
-	then
-	  #read -p "Please enter the name of the container to search for: " name
+  tmp="/tmp/MDS-tmp"
+  newTmp="/tmp/MDS-newTmp"
+
+  if [ $# != 1 ]
+  then
+    #read -p "Please enter the name of the container to search for: " name
     name="`dialog --stdout --inputbox \
       'Please enter the name of the container to search for' 0 0`"
-	else
-	  name=$1
-	fi
-	
-  docker search --format "{{.Name}} \"{{.Description}}\"" "$name" | sed \
-    's/\"\"/\"N\/A\"/g' > $tmp
-	
-	dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
-	
-	clear
+        else
+          name=$1
+        fi
+
+        docker search --format "{{.Name}} \"{{.Description}}\"" "$name" | sed \
+          's/\"\"/\"N\/A\"/g' > $tmp
+
+        dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
+
+        clear
 
   # Set contName for init script and pass name and conImg to new script
   # Official images don't have a '/' ...
@@ -287,7 +305,7 @@ function init() {
     dialog --stdout --yesno 'Would you like to add another container?' 0 0
     ans="$?"
   done
-  
+
   (cd proxy.d/ && ./autoconfig.sh)
 
   # I know this makes proxy twice, but deal with it
@@ -304,7 +322,6 @@ function proxyReset() {
 # Only allow certain options
 [ "$1" == "new" ] && new || true
 [ "$1" == "init" ] && init || true
-[ "$1" == "clean" ] && clean || true
 [ "$1" == "search" ] && search || true
 [ "$1" == "checkPorts" ] && checkPorts || true
 [ "$1" == "proxyReset" ] && proxyReset || true
