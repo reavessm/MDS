@@ -28,7 +28,7 @@ exposedPort=8085
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
-args+=" -v /mnt/VMStorage/HomeAssistant/:/config"
+args+=" -v /mnt/VMStorage/HomeAssistant:/config"
 args+=" -v /etc/localtime:/etc/localtime:ro"
 args+=" -p 8085:8123"
 
