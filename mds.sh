@@ -173,6 +173,11 @@ conImg="$img"
 #conDBImg="mariadb"
 #conNet="\$conName-net"
 
+# Uncomment this if the container ONLY accepts https requests.  NOTE: Even if
+# you leave this commented out, users will still have https to the proxy.
+# Normally, it's safe to leave this alone
+#useHTTPS=true
+
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8082
 
