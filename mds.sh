@@ -28,10 +28,12 @@ function printRed() {
 
 # This function lists all the exposed ports currently in use
 function checkPorts() {
+  {
   for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
   do      
-    echo "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
+    echo -e "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
   done
+  } | column -t
 }
 
 function stop() {
@@ -321,18 +323,20 @@ function init() {
   dialog --stdout --yesno 'Would you like to add containers now?' 0 0
   ans="$?"
 
-  while [[ "$ans" == "0" ]]
-  do
-    search
-    #${EDITOR:-vim} "$contName.d/mds.sh" # Handled by new
-    dialog --stdout --yesno 'Would you like to add another container?' 0 0
-    ans="$?"
-  done
-
-  (cd proxy.d/ && ./autoconfig.sh)
-
-  # I know this makes proxy twice, but deal with it
-  make proxy && make all
+  if [[ "$ans" == "0" ]]
+  then
+	  while [[ "$ans" == "0" ]]
+	  do
+	    search
+	    dialog --stdout --yesno 'Would you like to add another container?' 0 0
+	    ans="$?"
+	  done
+	
+	  (cd proxy.d/ && ./autoconfig.sh)
+	
+	  # I know this makes proxy twice, but deal with it
+	  make proxy && make all
+  fi
 }
 
 function proxyReset() {

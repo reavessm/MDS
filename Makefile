@@ -8,7 +8,13 @@
 #################################################################################
 
 usage :
-	@echo "enter name of dir to build"
+ifneq (,$(wildcard /usr/bin/cowsay))
+	@cowsay "Run 'make init' to begin creating a service. Then, run 'make <servicename>' to start that service, or 'make all' to start all services."
+else
+	@echo "Run 'make init' to begin creating a service. \
+Then, run 'make <servicename>' to start that service, or \
+'make all' to start all services." 
+endif
 
 CMD="run"
 
@@ -42,3 +48,6 @@ new :
 
 search :
 	@mds.sh search
+
+init :
+	@mds.sh init

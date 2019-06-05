@@ -20,6 +20,5 @@ args+=" -p 443:443"
 args+=" -p 80:80"
 args+=" -v `pwd`/config:/config:rw"
 
-
 # run args
 $1
