@@ -8,4 +8,8 @@ proxy.d/config/*
 *gitlab.yml
 *gitlab.rb
 domain.txt
+<<<<<<< HEAD
 *.d
+=======
+*.env
+>>>>>>> reavessm
