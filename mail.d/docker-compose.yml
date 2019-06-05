@@ -11,7 +11,7 @@ services:
     image: redis:alpine
     restart: always
     volumes:
-      - "/mailu/redis:/data"
+      - "/mnt/VMStorage/Mailu/redis:/data"
     
   # Core services
   front:
@@ -21,36 +21,34 @@ services:
     logging:
       driver: json-file
     ports:
-      - "192.168.0.3:8089:80"
-      - "::1:8089:80"
-      - "192.168.0.3:8088:443"
-      - "::1:8088:443"
+      - "192.168.0.3:8094:80"
+      - "192.168.0.3:8095:443"
       - "192.168.0.3:25:25"
-      - "::1:25:25"
       - "192.168.0.3:465:465"
-      - "::1:465:465"
       - "192.168.0.3:587:587"
-      - "::1:587:587"
       - "192.168.0.3:110:110"
-      - "::1:110:110"
       - "192.168.0.3:995:995"
-      - "::1:995:995"
       - "192.168.0.3:143:143"
-      - "::1:143:143"
       - "192.168.0.3:993:993"
-      - "::1:993:993"
     volumes:
-      - "/mailu/certs:/certs"
-      - "/mailu/overrides/nginx:/overrides"
+      - "/mnt/VMStorage/Mailu/certs:/certs"
+      - "/mnt/VMStorage/Mailu/overrides/nginx:/overrides"
 
+  resolver:
+    image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}unbound:${MAILU_VERSION:-1.6}
+    env_file: mailu.env
+    restart: always
+    networks:
+      default:
+        ipv4_address: 172.23.0.254
 
   admin:
     image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}admin:${MAILU_VERSION:-1.6}
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/data:/data"
-      - "/mailu/dkim:/dkim"
+      - "/mnt/VMStorage/Mailu/data:/data"
+      - "/mnt/VMStorage/Mailu/dkim:/dkim"
     depends_on:
       - redis
 
@@ -59,8 +57,8 @@ services:
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/mail:/mail"
-      - "/mailu/overrides:/overrides"
+      - "/mnt/VMStorage/Mailu/mail:/mail"
+      - "/mnt/VMStorage/Mailu/overrides:/overrides"
     depends_on:
       - front
 
@@ -69,20 +67,26 @@ services:
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/overrides:/overrides"
+      - "/mnt/VMStorage/Mailu/overrides:/overrides"
     depends_on:
       - front
+      - resolver
+    dns:
+      - 172.23.0.254
 
   antispam:
     image: ${DOCKER_ORG:-mailu}/${DOCKER_PREFIX:-}rspamd:${MAILU_VERSION:-1.6}
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/filter:/var/lib/rspamd"
-      - "/mailu/dkim:/dkim"
-      - "/mailu/overrides/rspamd:/etc/rspamd/override.d"
+      - "/mnt/VMStorage/Mailu/filter:/var/lib/rspamd"
+      - "/mnt/VMStorage/Mailu/dkim:/dkim"
+      - "/mnt/VMStorage/Mailu/overrides/rspamd:/etc/rspamd/override.d"
     depends_on:
       - front
+      - resolver
+    dns:
+      - 172.23.0.254
 
   # Optional services
   antivirus:
@@ -90,7 +94,11 @@ services:
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/filter:/data"
+      - "/mnt/VMStorage/Mailu/filter:/data"
+    depends_on:
+      - resolver
+    dns:
+      - 172.23.0.254
 
 
 
@@ -100,7 +108,7 @@ services:
     restart: always
     env_file: mailu.env
     volumes:
-      - "/mailu/webmail:/data"
+      - "/mnt/VMStorage/Mailu/webmail:/data"
     depends_on:
       - imap
 
@@ -111,4 +119,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.18.0.0/16
+        - subnet: 172.23.0.0/16

@@ -63,7 +63,6 @@ done
 
 # Basic stuff
 cat >> $file <<EOF
-
 map \$http_upgrade \$connection_upgrade {
     default upgrade;
     ''      close;
@@ -140,6 +139,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Upgrade           \$http_upgrade;
         proxy_set_header Connection        \$connection_upgrade;
+        add_header       X-Frame-Options   "allow-from https://*.${dom}";
     }
 }
 
@@ -163,6 +163,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Upgrade           \$http_upgrade;
         proxy_set_header Connection        \$connection_upgrade;
+        add_header       X-Frame-Options   "allow-from https://*.${dom}";
     }
 }
 
