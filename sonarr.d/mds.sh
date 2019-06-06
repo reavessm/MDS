@@ -36,6 +36,8 @@ conImg="linuxserver/sonarr"
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8082
 
+private=true
+
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0

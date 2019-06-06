@@ -34,7 +34,10 @@ conImg="linuxserver/ombi"
 #useHTTPS=true
 
 # Put the port you want to be made public to the load balancer.
-#exposedPort=8082
+exposedPort=3579
+
+# Set this to true if you want this name resolvable ONLY on the LAN
+private=true
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.

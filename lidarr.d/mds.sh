@@ -33,6 +33,8 @@ conImg="linuxserver/lidarr"
 # Normally, it's safe to leave this alone
 #useHTTPS=true
 
+private=true
+
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8686
 
