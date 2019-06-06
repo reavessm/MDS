@@ -38,6 +38,11 @@ function superRemove() {
   docker-compose -p mailu rm
 }
 
+function restart() {
+  stop
+  superRun
+}
+
 function deleteUser {
   read -p "Please enter the mail account name to delete (<name>@reaves.dev): "\
     username
