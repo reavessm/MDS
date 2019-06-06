@@ -71,7 +71,7 @@ function superRemove() {
     print "Removing $conNet network"
 }
 
-# Take care not to overwrite this function.  Overwrite 'remove' instead
+# Take care not to overwrite this function.  Overwrite 'superRemove' instead
 function remove() {
   stop
 
