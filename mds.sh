@@ -180,6 +180,9 @@ conImg="$img"
 # Normally, it's safe to leave this alone
 #useHTTPS=true
 
+# Uncomment this if you want this name resolvable ONLY on the LAN
+#private=true
+
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8082
 

@@ -26,14 +26,8 @@ do
   # Don't reinsert website
   if [[ `grep -E ^exposedPort $f` && "`echo $f | awk -F '/' '{print $2}'`" != "website.d" ]]
   then
-    if [[ "`awk -F '=' '/^useHTTPS/ {print $2}' $f`" == "true" ]]
-    then
-      subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
-        '/^exposedPort/ {print $2}' $f`:s "
-    else
-      subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
-        '/^exposedPort/ {print $2}' $f` "
-    fi
+    subs+="`echo $f | awk -F '/' '{print $2}' | sed 's/\.d//g'`:`awk -F '=' \
+      '/^exposedPort/ {print $2}' $f` "
   fi
 done
 
@@ -112,49 +106,57 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
-
 EOF
 
 # Location directives
 for sub in $subs
 do
   name="`echo ${sub} | cut -d ':' -f1`"
-  if [ "`echo ${sub} | cut -d ':' -f3`" == "s" ]
-  then
-    cat >> $file <<EOF
+  cat >> $file <<EOF
+
 server {
     listen 443;
     listen [::]:443;
-    allow  all;
-    server_name ${name}.${dom} www.${name}.${dom} ${name}.*;
+EOF
 
-    location / {
-        proxy_pass https://${name}_server;
-          
-        proxy_set_header Referer           "";
-        proxy_set_header Host              \$host;
-        proxy_set_header X-Real-IP         \$remote_addr;
-        proxy_set_header X-Forwarded-For   \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Host  \$server_name;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Upgrade           \$http_upgrade;
-        proxy_set_header Connection        \$connection_upgrade;
-        add_header       X-Frame-Options   "allow-from https://*.${dom}";
-    }
-}
-
+  # Check if 'private' is set to 'true'
+  if [ "`awk -F '=' '/^private/ {print $2}' ../${name}.d/mds.sh`" == "true" ]
+  then
+    # Block all connections except LAN
+    # TODO: Find a better way to define LAN
+    cat >> $file <<EOF
+    allow 192.168.0.0/24;
+    deny all;
 EOF
   else
+    # Else allow all
     cat >> $file <<EOF
-server {
-    listen 443;
-    listen [::]:443;
-    allow  all;
+    allow all;
+EOF
+  fi
+
+  cat >> $file <<EOF
     server_name ${name}.${dom} www.${name}.${dom} ${name}.*;
 
     location / {
+EOF
+
+  # Check if 'useHTTPS' is set to 'true'
+  if [ "`awk -F '=' '/^useHTTPS/ {print $2}' ../${name}.d/mds.sh`" == "true" ]
+  then
+    # Tell the proxy to use HTTPS to connect to container
+    cat >> $file <<EOF
+        proxy_pass https://${name}_server;
+EOF
+  else
+    # Tell the proxy to use HTTP to connect to container
+    cat >> $file <<EOF
         proxy_pass http://${name}_server;
-          
+EOF
+  fi
+
+  cat >> $file <<EOF
+         
         proxy_set_header Referer           "";
         proxy_set_header Host              \$host;
         proxy_set_header X-Real-IP         \$remote_addr;
@@ -163,10 +165,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Upgrade           \$http_upgrade;
         proxy_set_header Connection        \$connection_upgrade;
-        add_header       X-Frame-Options   "allow-from https://*.${dom}";
     }
 }
-
 EOF
-  fi
 done 
