@@ -81,7 +81,7 @@ function superRemove() {
     print "Removing $conNet network"
 }
 
-# Take care not to overwrite this function.  Overwrite 'remove' instead
+# Take care not to overwrite this function.  Overwrite 'superRemove' instead
 function remove() {
   stop
 
@@ -189,6 +189,9 @@ conImg="$img"
 # you leave this commented out, users will still have https to the proxy.
 # Normally, it's safe to leave this alone
 #useHTTPS=true
+
+# Uncomment this if you want this name resolvable ONLY on the LAN
+#private=true
 
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8082
