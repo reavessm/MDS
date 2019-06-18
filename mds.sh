@@ -193,6 +193,10 @@ conImg="$img"
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
 
+# Set this to a comma separated list of alternative subdomains that you like to
+# point to this service
+#aliases="foo,bar"
+
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
 #if [ -z "\`docker ps -a | awk '{print \$NF}' | grep -x \$conName\`" ]

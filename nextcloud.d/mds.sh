@@ -11,6 +11,8 @@ conDBImg="mariadb"
 
 exposedPort=8081
 
+aliases="drive"
+
 if [ -z "`docker ps -a | grep $conName`" ]
 then
   read -p "Please enter $conName username: " username
@@ -31,6 +33,7 @@ dbArgs+=" --net $conNet"
 dbArgs+=" -e MYSQL_DATABASE=$conDB"
 dbArgs+=" -e MYSQL_ROOT_PASSWORD=$password"
 dbArgs+=" -e MYSQL_USER=$username"
+dbArgs+=" -v /mnt/VMStorage/NextCloud/DB:/var/lib/mysql"
 
 # run args
 $1
