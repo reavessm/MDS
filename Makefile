@@ -51,3 +51,15 @@ search :
 
 init :
 	@mds.sh init
+
+restart :
+	CMD=restart
+
+start :
+	CMD=start
+
+stop :
+	CMD=stop
+
+remove :
+	CMD=remove

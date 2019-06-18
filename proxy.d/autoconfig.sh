@@ -126,6 +126,7 @@ EOF
     # TODO: Find a better way to define LAN
     cat >> $file <<EOF
     allow 192.168.0.0/24;
+    allow 172.17.0.0/16;
     deny all;
 EOF
   else
@@ -135,8 +136,19 @@ EOF
 EOF
   fi
 
+  aliases="$(awk -F '"' '/^aliases/ {gsub(/,/, " "); print $2}' ../${name}.d/mds.sh)"
+
   cat >> $file <<EOF
-    server_name ${name}.${dom} www.${name}.${dom} ${name}.*;
+    server_name ${name}.${dom} ${name}.*;
+EOF
+  for a in ${aliases}
+  do
+    cat >> $file <<EOF
+    server_name ${a}.${dom};
+EOF
+  done
+
+  cat >> $file <<EOF
 
     location / {
 EOF

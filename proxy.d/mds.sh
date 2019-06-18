@@ -12,7 +12,8 @@ args+=" -e PGID=1001"
 args+=" -e TZ=America/New_York"
 args+=" -e URL=reaves.dev"
 args+=" -e SUBDOMAINS=www,`ls .. | awk -F '.' \
-  'BEGIN{ORS=","} /\.d/ {print $1}' | sed 's/,$//'`"
+  'BEGIN{ORS=","} /\.d/ {print $1}' | sed 's/,$//'`,`awk -F '"' \
+  '/^aliases/ {print $2}' ../*.d/mds.sh`"
 args+=" -e EMAIL=reaves735@gmail.com"
 args+=" -e DHLEVEL=1024"
 args+=" -e VALIDATION=http"
