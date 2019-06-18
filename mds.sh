@@ -47,19 +47,21 @@ function checkPorts() {
 }
 
 function stop() {
-  docker stop $conName >/dev/null && print "Stopping $conName"
+  print "Stopping $conName"
+  docker stop $conName >/dev/null
 
-  [ -n "$conDB" ] && docker stop $conDB >/dev/null && \
-    print "Stopping $conDB"
+  [ -n "$conDB" ] && print "Stopping $conDB"
+  [ -n "$conDB" ] && docker stop $conDB >/dev/null
 
   printRed "$conName Stopped"
 }
 
 function start() {
-  [ -n "$conDB" ] && docker start $conDB >/dev/null && \
-    print "Starting $conDB"
+  [ -n "$conDB" ] && print "Starting $conDB"
+  [ -n "$conDB" ] && docker start $conDB >/dev/null
 
-  docker start $conName >/dev/null && print "Starting $conName"
+  print "Starting $conName"
+  docker start $conName >/dev/null
 
   printRed "$conName Started"
 
@@ -72,13 +74,14 @@ function restart() {
 }
 
 function superRemove() {
-  docker rm $conName >/dev/null && print "Removing $conName"
+  print "Removing $conName"
+  docker rm $conName >/dev/null
 
-  [ -n "$conDB" ] && docker rm $conDB >/dev/null && \
-    print "Removing $conDB"
+  [ -n "$conDB" ] && print "Removing $conDB"
+  [ -n "$conDB" ] && docker rm $conDB >/dev/null 
 
-  [ -n "$conNet" ] && docker network rm $conNet >/dev/null && \
-    print "Removing $conNet network"
+  [ -n "$conNet" ] && print "Removing $conNet network"
+  [ -n "$conNet" ] && docker network rm $conNet >/dev/null
 }
 
 # Take care not to overwrite this function.  Overwrite 'superRemove' instead
@@ -110,14 +113,14 @@ function postconfig() {
 }
 
 function superRun() {
-  [ -n "$conNet" ] && docker network create $conNet >/dev/null && \
-    print "Creating $conNet network"
+  [ -n "$conNet" ] &&  print "Creating $conNet network"
+  [ -n "$conNet" ] && docker network create $conNet >/dev/null 
 
-  [ -n "$conDB" ] && docker run --name $conDB $dbArgs "$conDBImg" >/dev/null && \
-    print "Starting $conDB"
+  [ -n "$conDB" ] &&   print "Starting $conDB"
+  [ -n "$conDB" ] && docker run --name $conDB $dbArgs "$conDBImg" >/dev/null
 
-  docker run --name $conName $args "$conImg" &>/dev/null && \
-    print "Starting $conName"
+  print "Starting $conName"
+  docker run --name $conName $args "$conImg" &>/dev/null
 }
 
 # Take care not to overwrite this function.  Overwrite 'run' instead
@@ -200,6 +203,10 @@ conImg="$img"
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
 
+# Set this to a comma separated list of alternative subdomains that you like to
+# point to this service
+#aliases="foo,bar"
+
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
 #if [ -z "\`docker ps -a | awk '{print \$NF}' | grep -x \$conName\`" ]
@@ -212,6 +219,7 @@ conImg="$img"
 # These are the args passed to the \`docker run\` command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
+args+=" --restart unless-stopped"
 EOF
 
 dialog --prgbox "Pulling Image" "docker pull $img" 50 80
