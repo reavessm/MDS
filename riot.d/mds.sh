@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="ombi"
+conName="riot-web"
 
 # You must specify a container image.
-conImg="linuxserver/ombi"
+conImg="bubuntux/riot-web"
 
 # If your container does not need a separate DB or network, leave these
 # commented out.
@@ -33,11 +33,11 @@ conImg="linuxserver/ombi"
 # Normally, it's safe to leave this alone
 #useHTTPS=true
 
-# Put the port you want to be made public to the load balancer.
-exposedPort=3579
-
-# Set this to true if you want this name resolvable ONLY on the LAN
+# Uncomment this if you want this name resolvable ONLY on the LAN
 #private=true
+
+# Put the port you want to be made public to the load balancer.
+exposedPort=8092
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -55,9 +55,7 @@ exposedPort=3579
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
-args+=" -p 3579:3579"
-args+=" -e PUID=1001"
-args+=" -e PGID=1001"
+args+=" -p 8092:80"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"

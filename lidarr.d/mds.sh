@@ -36,7 +36,7 @@ conImg="linuxserver/lidarr"
 private=true
 
 # Put the port you want to be made public to the load balancer.
-#exposedPort=8686
+exposedPort=8686
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -57,6 +57,7 @@ args="-d"
 args+=" -p 8686:8686"
 args+=" -v /mnt/Media/Music:/music"
 args+=" -v /mnt/Media/Downloads:/downloads"
+args+=" -v /mnt/VMStorage/Transmission/completed:/data/completed"
 args+=" -e PUID=1001"
 args+=" -e PGID=1001"
 #args+=" -v /config:/config"

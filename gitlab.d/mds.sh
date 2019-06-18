@@ -62,7 +62,7 @@ args+=" -v /mnt/VMStorage/Git/gitlab-data:/var/opt/gitlab:Z"
 
 function preconfig() {
   print "Copying config for $conName ..."
-  sudo  cp ./gitlab.rb /mnt/VMStorage/Git/gitlab-config
+  [ -f ./gitlab.rb ] && sudo  cp ./gitlab.rb /mnt/VMStorage/Git/gitlab-config
   printRed "Done copying config for $conName!"
 }
 

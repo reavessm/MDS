@@ -36,7 +36,7 @@ conImg="linuxserver/radarr"
 private=true
 
 # Put the port you want to be made public to the load balancer.
-#exposedPort=8082
+exposedPort=7878
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -59,6 +59,7 @@ args+=" -e PUID=1001"
 args+=" -e PGID=1001"
 args+=" -v /mnt/Media/Movies:/movies"
 args+=" -v /mnt/Media/Downloads:/downloads"
+args+=" -v /mnt/VMStorage/Transmission/completed:/data/completed"
 #args+=" -v /config:/config"
 
 # If you need to group things in a network:

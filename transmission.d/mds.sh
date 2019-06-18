@@ -36,7 +36,7 @@ conImg="haugene/transmission-openvpn"
 private=true
 
 # Put the port you want to be made public to the load balancer.
-#exposedPort=9091
+exposedPort=9091
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -56,6 +56,9 @@ fi
 args="-d"
 #args+=" -p 8888:8888"
 args+=" -p 9091:9091"
+#args+=" -v /mnt/Media/Downloads:/downloads"
+args+=" -v /mnt/VMStorage/Transmission:/data"
+args+=" -e TRANSMISSION_HOME=/data/transmission-home"
 args+=" -e PUID=1001"
 args+=" -e PGID=1001"
 args+=" -e CREATE_TUN_DEVICE=true"
@@ -65,6 +68,7 @@ args+=" -v /etc/localtime:/etc/localtime:ro"
 args+=" -e OPENVPN_USERNAME=$username"
 args+=" -e OPENVPN_PASSWORD=$password"
 args+=" -e LOCAL_NETWORK=192.168.0.0/24"
+args+=" --restart unless-stopped"
 #args+=" -e NORDVPN_COUNTRY=Netherlands"
 #args+=" -e NORDVPN_COUNTRY=153"
 args+=" -e OPENVPN_CONFIG=nl69.nordvpn.com.udp"
@@ -147,7 +151,6 @@ args+=" -e OPENVPN_PROVIDER=NORDVPN"
 #args+=" -e TRANSMISSION_UTP_ENABLED=true"
 #args+=" -e TRANSMISSION_WATCH_DIR=/data/watch"
 #args+=" -e TRANSMISSION_WATCH_DIR_ENABLED=true"
-#args+=" -e TRANSMISSION_HOME=/data/transmission-home"
 #args+=" -e TRANSMISSION_WATCH_DIR_FORCE_GENERIC=false"
 #args+=" -e ENABLE_UFW=false"
 #args+=" -e UFW_ALLOW_GW_NET=false"

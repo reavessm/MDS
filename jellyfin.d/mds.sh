@@ -36,6 +36,8 @@ conImg="jellyfin/jellyfin"
 # Put the port you want to be made public to the load balancer.
 exposedPort=8097
 
+#private=true
+
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
@@ -55,11 +57,7 @@ args="-d"
 args+=" -p 8097:8096"
 #args+=" -v /cache:/cache"
 #args+=" -v /config:/config"
-#args+=" -v /media:/media"
-args+=" -e PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-args+=" -e ASPNETCORE_URLS=http://+:80"
-args+=" -e DOTNET_RUNNING_IN_CONTAINER=true"
-args+=" -e DOTNET_VERSION=2.2.5"
+args+=" -v /mnt/Media:/media"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"

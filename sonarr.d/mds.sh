@@ -34,7 +34,7 @@ conImg="linuxserver/sonarr"
 #useHTTPS=true
 
 # Put the port you want to be made public to the load balancer.
-#exposedPort=8082
+exposedPort=8989
 
 private=true
 
@@ -59,6 +59,7 @@ args+=" -e PUID=1001"
 args+=" -e PGID=1001"
 args+=" -v /mnt/Media/TVShows:/tv"
 args+=" -v /mnt/Media/Downloads:/downloads"
+args+=" -v /mnt/VMStorage/Transmission/completed:/data/completed"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"
