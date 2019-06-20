@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="lidarr"
+conName="dokuwiki"
 
 # You must specify a container image.
-conImg="linuxserver/lidarr"
+conImg="bitnami/dokuwiki"
 
 # If your container does not need a separate DB or network, leave these
 # commented out.
@@ -33,33 +33,38 @@ conImg="linuxserver/lidarr"
 # Normally, it's safe to leave this alone
 #useHTTPS=true
 
-private=true
+# Uncomment this if you want this name resolvable ONLY on the LAN
+#private=true
 
 # Put the port you want to be made public to the load balancer.
-exposedPort=8686
+exposedPort=8098
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
 
+# Set this to a comma separated list of alternative subdomains that you like to
+# point to this service
+#aliases="foo,bar"
+
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
-#if [ -z "`docker ps -a | awk '{print $NF}' | grep -x $conName`" ]
-#then
-#  read -p "Please enter $conName username: " username
-#  read -s -p "Please enter $conName password: " password \
-#    && echo
-#fi
+if [ -z "`docker ps -a | awk '{print $NF}' | grep -x $conName`" ]
+then
+  read -p "Please enter $conName username: " username
+  read -s -p "Please enter $conName password: " password \
+    && echo
+fi
 
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
-args+=" -p 8686:8686"
-args+=" -v /mnt/Media/Music:/music"
-args+=" -v /mnt/Media/Downloads:/downloads"
-args+=" -v /mnt/VMStorage/Transmission/completed:/data/completed"
-args+=" -e PUID=1001"
-args+=" -e PGID=1001"
+args+=" --restart unless-stopped"
+args+=" -p 8098:80"
+args+=" -v /mnt/VMStorage/DokuWiki:/bitnami"
+args+=" -e DOKUWIKI_USERNAME=${username}"
+args+=" -e DOKUWIKI_PASSWORD=${password}"
+args+=" -e DOKUWIKI_WIKI_NAME=Homelab"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"

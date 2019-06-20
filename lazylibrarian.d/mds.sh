@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="lidarr"
+conName="lazylibrarian"
 
 # You must specify a container image.
-conImg="linuxserver/lidarr"
+conImg="linuxserver/lazylibrarian"
 
 # If your container does not need a separate DB or network, leave these
 # commented out.
@@ -33,14 +33,19 @@ conImg="linuxserver/lidarr"
 # Normally, it's safe to leave this alone
 #useHTTPS=true
 
+# Uncomment this if you want this name resolvable ONLY on the LAN
 private=true
 
 # Put the port you want to be made public to the load balancer.
-exposedPort=8686
+exposedPort=5299
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
+
+# Set this to a comma separated list of alternative subdomains that you like to
+# point to this service
+#aliases="foo,bar"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
@@ -54,12 +59,13 @@ exposedPort=8686
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
-args+=" -p 8686:8686"
-args+=" -v /mnt/Media/Music:/music"
+args+=" --restart unless-stopped"
+args+=" -p 5299:5299"
+args+=" -v /mnt/Media/books:/books"
 args+=" -v /mnt/Media/Downloads:/downloads"
-args+=" -v /mnt/VMStorage/Transmission/completed:/data/completed"
 args+=" -e PUID=1001"
 args+=" -e PGID=1001"
+args+=" -e TZ=America/NewYork"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"
