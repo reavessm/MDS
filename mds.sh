@@ -26,6 +26,12 @@ function printRed() {
   echo -e "${RED}$1${NC}"
 }
 
+function printYellow() {
+  YELLOW='\033[1;33m'
+  NC='\033[0m'
+  echo -e "${YELLOW}$1${NC}"
+}
+
 # This function lists all the exposed ports currently in use
 function checkPorts() {
   {
@@ -43,7 +49,12 @@ function stop() {
   [ -n "$conDB" ] && print "Stopping $conDB"
   [ -n "$conDB" ] && docker stop $conDB >/dev/null
 
-  printRed "$conName Stopped"
+  if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'false' ]]
+  then
+    printYellow "$conName Stopped"
+  else
+    printRed "X $conName did not stop"
+  fi
 }
 
 function start() {
@@ -53,7 +64,12 @@ function start() {
   print "Starting $conName"
   docker start $conName >/dev/null
 
-  printRed "$conName Started"
+  if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'true' ]]
+  then
+    printYellow "$conName Started"
+  else
+    printRed "X $conName did not start"
+  fi
 
   exit 0
 }
@@ -80,7 +96,7 @@ function remove() {
 
   superRemove
 
-  printRed "$conName Removed"
+  printYellow "$conName Removed"
 }
 
 function check() {
@@ -124,7 +140,12 @@ function run() {
 
   postconfig
 
-  printRed "$conName is running!"
+  if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'true' ]]
+  then
+    printYellow "$conName is Running!"
+  else
+    printRed "X $conName did not start"
+  fi
 }
 
 function new() {
@@ -257,7 +278,7 @@ cat >> $name.d/mds.sh << EOF
 #function preconfig() {
 #  print "Doing something before run ..."
 #  echo Something
-#  printRed "Done something for \$conName!"
+#  printYellow "Done something for \$conName!"
 #}
 
 # Uncomment this to run commands after the \`docker run\` command.  These
@@ -265,7 +286,7 @@ cat >> $name.d/mds.sh << EOF
 #function postconfig() {
 #  print "Doing after before run ..."
 #  echo Something
-#  printRed "Done something for \$conName!"
+#  printYellow "Done something for \$conName!"
 
 # Ovewrite these methods for vms not managed in MDS.  The proxy will still
 # point to the service, but will not create it.  This is normally used with the
@@ -295,7 +316,7 @@ EOF
 
   ${EDITOR:-vim} $name.d/mds.sh
 
-  printRed "Done"
+  printYellow "Done"
 }
 
 function search() {
