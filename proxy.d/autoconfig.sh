@@ -177,6 +177,13 @@ EOF
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Upgrade           \$http_upgrade;
         proxy_set_header Connection        \$connection_upgrade;
+EOF
+  for s in "$(awk -F '"' '/^proxySettings/ {print $2}' ../${name}.d/mds.sh)"
+  do
+    echo "        $s" >> $file
+  done
+
+  cat >> $file <<EOF
     }
 }
 EOF

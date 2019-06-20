@@ -210,6 +210,11 @@ conImg="$img"
 # Put the port you want to be made public to the load balancer.
 #exposedPort=8082
 
+# Additional proxy settings, to be copied as-is into proxy
+#proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
+#proxySettings="foo;"
+#proxySettings="bar;"
+
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
