@@ -2,7 +2,7 @@
 
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
-conName="stephenreaves.com"
+conName="reaves.dev"
 
 conImg="nginx:alpine"
 
