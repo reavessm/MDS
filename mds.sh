@@ -10,9 +10,13 @@
 ###############################################################################
 
 declare -a args
-declare -a DBArgs
-contName=
-hostIP="`ip route get 1 | awk '{print $(NF-2);exit}'`"
+declare -a dbArgs
+conName=""
+conDB=""
+conNet=""
+conDBImg=""
+conImg=""
+hostIP="$(ip route get 1 | awk '{print $(NF-2);exit}')"
 
 function print() {
   GREEN='\033[1;32m'
@@ -35,21 +39,22 @@ function printYellow() {
 # This function lists all the exposed ports currently in use
 function checkPorts() {
   {
-  for port in `awk -F '=' '/^exposedPort/ {print $2}' *.d/mds.sh | sort`
+  awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
+    read -r port
   do      
-    echo -e "$port -> `grep $port *.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}'`"
+    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}')"
   done
   } | column -t
 }
 
 function stop() {
   print "Stopping $conName"
-  docker stop $conName >/dev/null
+  docker stop "$conName" >/dev/null
 
   [ -n "$conDB" ] && print "Stopping $conDB"
-  [ -n "$conDB" ] && docker stop $conDB >/dev/null
+  [ -n "$conDB" ] && docker stop "$conDB" >/dev/null
 
-  if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'false' ]]
+  if [[ $(docker container inspect -f '{{.State.Running}}' "$conName") == 'false' ]]
   then
     printYellow "$conName Stopped"
   else
@@ -59,12 +64,12 @@ function stop() {
 
 function start() {
   [ -n "$conDB" ] && print "Starting $conDB"
-  [ -n "$conDB" ] && docker start $conDB >/dev/null
+  [ -n "$conDB" ] && docker start "$conDB" >/dev/null
 
   print "Starting $conName"
-  docker start $conName >/dev/null
+  docker start "$conName" >/dev/null
 
-  if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'true' ]]
+  if [[ $(docker container inspect -f '{{.State.Running}}' "$conName") == 'true' ]]
   then
     printYellow "$conName Started"
   else
@@ -81,7 +86,7 @@ function restart() {
 
 function superRemove() {
   print "Removing $conName"
-  docker rm $conName >/dev/null
+  docker rm "$conName" >/dev/null
 
   [ -n "$conDB" ] && print "Removing $conDB"
   [ -n "$conDB" ] && docker rm $conDB >/dev/null 
@@ -119,14 +124,14 @@ function postconfig() {
 }
 
 function superRun() {
-  [ -n "$conNet" ] &&  print "Creating $conNet network"
+  [ -n "$conNet" ] && print "Creating $conNet network"
   [ -n "$conNet" ] && docker network create $conNet >/dev/null 
 
-  [ -n "$conDB" ] &&   print "Starting $conDB"
-  [ -n "$conDB" ] && docker run --name $conDB $dbArgs "$conDBImg" >/dev/null
+  [ -n "$conDB" ] && print "Starting $conDB"
+  [ -n "$conDB" ] && docker run --name "$conDB" $dbArgs "$conDBImg" >/dev/null
 
   print "Starting $conName"
-  docker run --name $conName $args "$conImg" &>/dev/null
+  docker run --name "$conName" $args "$conImg" &>/dev/null
 }
 
 # Take care not to overwrite this function.  Overwrite 'run' instead
@@ -151,24 +156,24 @@ function run() {
 function new() {
   if [ $# != 2 ] 
   then
-    read -p "Please enter the name of the service: " name
-    img=$name
+    read -rp "Please enter the name of the service: " name
+    img="$name"
   else
     name="$1"
     img="$2"
   fi
 
-  if [ -d $name.d ]
+  if [ -d "$name.d" ]
   then
     printRed "ERROR: Name already exists"
     exit 1
   fi
 
   print "Making directory '$name.d'"
-  mkdir -p $name.d
+  mkdir -p "$name.d"
 
   print "Making file '$name.d/mds.sh'"
-  cat > $name.d/mds.sh << EOF
+  cat > "$name".d/mds.sh << EOF
 #!/bin/bash
 
 ###############################################################################
@@ -225,14 +230,14 @@ conImg="$img"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
-#if [ -z "\`docker ps -a | awk '{print \$NF}' | grep -x \$conName\`" ]
+#if [ -z "\$(docker ps -a | awk '{print \$NF}' | grep -x \$conName\)" ]
 #then
 #  read -p "Please enter \$conName username: " username
 #  read -s -p "Please enter \$conName password: " password \\
 #    && echo
 #fi
 
-# These are the args passed to the \`docker run\` command.  Make sure all args
+# These are the args passed to the \$(docker run\) command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
 args+=" --restart unless-stopped"
@@ -240,27 +245,27 @@ EOF
 
 dialog --prgbox "Pulling Image" "docker pull $img" 50 80
 
-for port in `docker image inspect -f '{{.Config.ExposedPorts}}' $img \
-  | sed 's/[^[:digit:][:space:]]//g'`
+for port in $(docker image inspect -f '{{.Config.ExposedPorts}}' "$img" \
+  | sed 's/[^[:digit:][:space:]]//g')
 do
-  echo "args+=\" -p $port:$port\"" >> $name.d/mds.sh
+  echo "args+=\" -p $port:$port\"" >> "$name".d/mds.sh
 done
 
-for vol in `docker image inspect -f '{{.Config.Volumes}}' $img \
-  | sed 's/map\[\|\]//g' | awk -F ':' '{print $1}'`
+for vol in $(docker image inspect -f '{{.Config.Volumes}}' "$img" \
+  | sed 's/map\[\|\]//g' | awk -F ':' '{print $1}')
 do
-  echo "args+=\" -v $vol:$vol\"" >> $name.d/mds.sh
+  echo "args+=\" -v $vol:$vol\"" >> "$name".d/mds.sh
 done
 
 # Most of these are completely unnecessary, but I'll leave that up to the user
 # to decide.
-for env in `docker image inspect -f '{{.Config.Env}}' $img \
-  | sed 's/\[\|\]//g'`
+for env in $(docker image inspect -f '{{.Config.Env}}' "$img" \
+  | sed 's/\[\|\]//g')
 do
-  echo "args+=\" -e $env\"" >> $name.d/mds.sh
+  echo "args+=\" -e $env\"" >> "$name".d/mds.sh
 done
 
-cat >> $name.d/mds.sh << EOF
+cat >> "$name".d/mds.sh << EOF
 
 # If you need to group things in a network:
 #args+=" --net \$conNet"
@@ -269,7 +274,7 @@ cat >> $name.d/mds.sh << EOF
 #args+=" -e KEYCLOAK_USER=\$username"
 #args+=" -e KEYCLOAK_PASSWORD=\$password"
 
-# These are the args passed to the \`docker run\` command for the DB, if conDB is
+# These are the args passed to the \$(docker run\) command for the DB, if conDB is
 # not blank.  Make sure all args EXCEPT for the first one start with a space.
 #dbArgs="-d"
 #dbArgs+=" --net \$conNet"
@@ -278,7 +283,7 @@ cat >> $name.d/mds.sh << EOF
 #dbArgs+=" -e MYSQL_USER=keycloak"
 #dbArgs+=" -e MYSQL_DATABASE=keycloak"
 
-# Uncomment this to run commands before the \`docker run\` command.  These
+# Uncomment this to run commands before the \$(docker run\) command.  These
 # commands will run only on the first run.
 #function preconfig() {
 #  print "Doing something before run ..."
@@ -286,7 +291,7 @@ cat >> $name.d/mds.sh << EOF
 #  printYellow "Done something for \$conName!"
 #}
 
-# Uncomment this to run commands after the \`docker run\` command.  These
+# Uncomment this to run commands after the \$(docker run\) command.  These
 # commands will run only on the first run.
 #function postconfig() {
 #  print "Doing after before run ..."
@@ -317,9 +322,9 @@ cat >> $name.d/mds.sh << EOF
 EOF
 
   # Make executable
-  chmod +x $name.d/mds.sh
+  chmod +x "$name".d/mds.sh
 
-  ${EDITOR:-vim} $name.d/mds.sh
+  ${EDITOR:-vim} "$name".d/mds.sh
 
   printYellow "Done"
 }
@@ -331,28 +336,26 @@ function search() {
   if [ $# != 1 ]
   then
     #read -p "Please enter the name of the container to search for: " name
-    name="`dialog --stdout --inputbox \
-      'Please enter the name of the container to search for' 0 0`"
-        else
-          name=$1
-        fi
-
-        docker search --format "{{.Name}} \"{{.Description}}\"" "$name" | sed \
-          's/\"\"/\"N\/A\"/g' > $tmp
-
-        dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
-
-        clear
-
-  # Set contName for init script and pass name and conImg to new script
-  # Official images don't have a '/' ...
-  if [[ `grep "/" $newTmp` ]]
-  then
-    contName="`awk -F "/" '{print $2}' $newTmp`"
-    new `awk -F "/" '{print $2,$0}' $newTmp` 2>/dev/null
+    name="$(dialog --stdout --inputbox \
+      'Please enter the name of the container to search for' 0 0)"
   else
-    contName="`cat $newTmp`"
-    new `awk '{print $0,$0}' $newTmp` 2>/dev/null
+    name=$1
+  fi
+
+  docker search --format "{{.Name}} \"{{.Description}}\"" "$name" | sed \
+    's/\"\"/\"N\/A\"/g' > $tmp
+
+  dialog --stdout --menu "Choose one:" 0 0 0 --file "$tmp" > $newTmp || exit 1
+
+  clear
+
+  # Pass name and conImg to 'new' script
+  # Official images don't have a '/' ...
+  if [[ $(grep "/" $newTmp) ]]
+  then
+    new $(awk -F "/" '{print $2,$0}' $newTmp) 2>/dev/null
+  else
+    new $(awk '{print $0,$0}' $newTmp) 2>/dev/null
   fi
 }
 
