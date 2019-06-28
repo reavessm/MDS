@@ -1,5 +1,6 @@
 # My Docker Scripts
-Becuase Kubernetes is hard...
+
+An init framework for homelab services.
 
 ## Usage
 
@@ -42,13 +43,26 @@ Searching for a new contianer image
 
 ## Examples
 
+### Starting from Scratch
+1. Configure your DNS.  You should only need two records, 'domain.com' and '\*.domain.com', both pointing to your host.
+1. `git clone https://github.com/reavessm/MDS.git && cd MDS`
+1. `make init`
+1. Follow the prompts, changing variables as needed
+1. Enjoy your services!
+    * Everything should be in a directory called `<nameOfService>.d`, which points to 'https://<nameOfService>.domain.com'
+    * If you want to point something to just 'domain.com' move it to the special website.d folder: 
+        1. Stop the service with `make CMD=stop service`
+        1. Rename the folder with `mv service.d website.d`
+        1. Start it back up with `make website`
+        1. Reset the proxy `make proxyReset`
+
 ### Nextcloud
 
 1. Configure your DNS.  You should only need two records, 'domain.com' and '\*.domain.com', both pointing to your host.
 1. `git clone https://github.com/reavessm/MDS.git && cd MDS`
 1. `make search nextcloud`
 1. Change the 'exposedPort' variable to be the port you want open on your machine. This should be whatever you map to port 80 on Nextcloud.
-    * Optionally, you can change any of the other 'args'.  There's is a lot of unnecessary '-e' flags, so have fun with that.
+    * Optionally, you can change any of the other 'args'.  There are a lot of unnecessary '-e' flags, so have fun with that.
 1. exit vim ('<Esc>:wq', or '<Esc>:x', or '<Esc>ZZ')
 1. `make proxyReset`
 1. In a web browswer, go to 'nextcloud.domain.com'
