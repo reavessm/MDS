@@ -38,6 +38,8 @@ exposedPort=8097
 
 #private=true
 
+aliases="stetflix"
+
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
 #conIP=192.168.0.0
