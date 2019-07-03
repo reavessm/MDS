@@ -1,33 +1,37 @@
 #!/bin/bash
 
 ###############################################################################
-# My Docker Script                                                            #
+# MDS                                                                         #
 # Written by: Stephen Reaves                                                  #
 #                                                                             #
-# Every Docker container should have it's own dir with the '.d' suffix.       #
+# Every service should have it's own dir with the '.d' suffix.                #
 # Inside that dir, there should be mds.sh script that defines variables like  #
 # the image.  From there, this script should handle docker builds, runs, etc. #
 ###############################################################################
 
-declare -a args
-declare -a dbArgs
-conName=""
 conDB=""
 conNet=""
-conDBImg=""
 conImg=""
+conName=""
+conDBImg=""
+declare -a args
+declare -a dbArgs
 hostIP="$(ip route get 1 | awk '{print $(NF-2);exit}')"
 
 function print() {
+#{{{
   GREEN='\033[1;32m'
   NC='\033[0m'
   echo -e "${GREEN}$1${NC}"
+#}}}
 }
 
 function printRed() {
+#{{{
   RED='\033[1;31m'
   NC='\033[0m'
   echo -e "${RED}$1${NC}"
+#}}}
 }
 
 function clean() {
@@ -41,13 +45,16 @@ function clean() {
 }
 
 function printYellow() {
+#{{{
   YELLOW='\033[1;33m'
   NC='\033[0m'
   echo -e "${YELLOW}$1${NC}"
+#}}}
 }
 
 # This function lists all the exposed ports currently in use
 function checkPorts() {
+#{{{
   {
   awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
     read -r port
@@ -55,9 +62,11 @@ function checkPorts() {
     echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}')"
   done
   } | column -t
+#}}}
 }
 
 function stop() {
+#{{{
   print "Stopping $conName"
   docker stop "$conName" >/dev/null
 
@@ -70,9 +79,11 @@ function stop() {
   else
     printRed "X $conName did not stop"
   fi
+#}}}
 }
 
 function start() {
+#{{{
   [ -n "$conDB" ] && print "Starting $conDB"
   [ -n "$conDB" ] && docker start "$conDB" >/dev/null
 
@@ -87,14 +98,18 @@ function start() {
   fi
 
   exit 0
+#}}}
 }
 
 function restart() {
+#{{{
   stop
   start
+#}}}
 }
 
 function superRemove() {
+#{{{
   print "Removing $conName"
   docker rm "$conName" >/dev/null
 
@@ -103,37 +118,49 @@ function superRemove() {
 
   [ -n "$conNet" ] && print "Removing $conNet network"
   [ -n "$conNet" ] && docker network rm $conNet >/dev/null
+#}}}
 }
 
 # Take care not to overwrite this function.  Overwrite 'superRemove' instead
 function remove() {
+#{{{
   stop
 
   superRemove
 
   printYellow "$conName Removed"
+#}}}
 }
 
 function check() {
+#{{{
   docker ps -a | awk '{print $NF}' | grep -x $conName > /dev/null && print \
     "$conName already exists" && start
+#}}}
 }
 
 function build() {
+#{{{
   [ -f ./Dockerfile ] && docker build --no-cache -t $conName . && \
     print "Building $conName"
+#}}}
 }
 
 # Empty functions to be hooked by contianer mds
 # Although they can't be really empty or bash yells at me
 function preconfig() { 
+#{{{
   print "Nothing to do for preconfig"
+#}}}
 }
 function postconfig() { 
+#{{{
   print "Nothing to do for postconfig"
+#}}}
 }
 
 function superRun() {
+#{{{
   [ -n "$conNet" ] && print "Creating $conNet network"
   [ -n "$conNet" ] && docker network create $conNet >/dev/null 
 
@@ -142,10 +169,12 @@ function superRun() {
 
   print "Starting $conName"
   docker run --name "$conName" $args "$conImg" &>/dev/null
+#}}}
 }
 
 # Take care not to overwrite this function.  Overwrite 'run' instead
 function run() {
+#{{{
   check
   build
 
@@ -161,9 +190,11 @@ function run() {
   else
     printRed "X $conName did not start"
   fi
+#}}}
 }
 
 function new() {
+#{{{
   if [ $# != 2 ] 
   then
     read -rp "Please enter the name of the service: " name
@@ -187,10 +218,10 @@ function new() {
 #!/bin/bash
 
 ###############################################################################
-# My Docker Script                                                            #
+# MDS                                                                         #
 # Written by: Stephen Reaves                                                  #
 #                                                                             #
-# Every Docker container should have it's own dir with the '.d' suffix.       #
+# Every service should have it's own dir with the '.d' suffix.                #
 # Inside that dir, there should be mds.sh script that defines variables like  #
 # the image.  From there, this script should handle docker builds, runs, etc. #
 #                                                                             #
@@ -227,8 +258,8 @@ conImg="$img"
 
 # Additional proxy settings, to be copied as-is into proxy
 #proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
-#proxySettings="foo;"
-#proxySettings="bar;"
+#proxySettings+="foo;"
+#proxySettings+="bar;"
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -288,6 +319,7 @@ cat >> "$name".d/mds.sh << EOF
 # not blank.  Make sure all args EXCEPT for the first one start with a space.
 #dbArgs="-d"
 #dbArgs+=" --net \$conNet"
+#dbArgs+=" --restart unless-stopped
 #dbArgs+=" -e MYSQL_ROOT_PASSWORD=password"
 #dbArgs+=" -e MYSQL_PASSWORD=password"
 #dbArgs+=" -e MYSQL_USER=keycloak"
@@ -334,18 +366,20 @@ EOF
   # Make executable
   chmod +x "$name".d/mds.sh
 
+  # Open in editor
   ${EDITOR:-vim} "$name".d/mds.sh
 
   printYellow "Done"
+#}}}
 }
 
 function search() {
+#{{{
   tmp="/tmp/MDS-tmp"
   newTmp="/tmp/MDS-newTmp"
 
   if [ $# != 1 ]
   then
-    #read -p "Please enter the name of the container to search for: " name
     name="$(dialog --stdout --inputbox \
       'Please enter the name of the container to search for' 0 0)"
   else
@@ -367,9 +401,11 @@ function search() {
   else
     new $(awk '{print $0,$0}' $newTmp) 2>/dev/null
   fi
+#}}}
 }
 
 function init() {
+#{{{
   dialog --stdout --yesno 'Would you like to add containers now?' 0 0
   ans="$?"
 
@@ -387,18 +423,23 @@ function init() {
 	  # I know this makes proxy twice, but deal with it
 	  make proxy && make all
   fi
+#}}}
 }
 
 function proxyReset() {
+#{{{
   (cd proxy.d && autoconfig.sh)
 
   make CMD=remove proxy &>/dev/null
   make proxy &>/dev/null
+#}}}
 }
 
 # Only allow certain options
+#{{{
 [ "$1" == "new" ] && new || true
 [ "$1" == "init" ] && init || true
 [ "$1" == "search" ] && search || true
 [ "$1" == "checkPorts" ] && checkPorts || true
 [ "$1" == "proxyReset" ] && proxyReset || true
+#}}}
