@@ -21,7 +21,7 @@ CMD="run"
 DIR = $(wildcard *.d)
 TARGET = $(DIR:.d=)
 
-.PHONY: $(DIR) $(TARGET) new clean search
+.PHONY: $(DIR) $(TARGET) new clean search restart
 
 $(DIR) :
 	@(cd $@ && mds.sh $(CMD))
@@ -52,13 +52,17 @@ init :
 	@mds.sh init
 
 restart :
-	CMD=restart
+	@: # Hide output
+	$(eval CMD=restart)
 
 start :
-	CMD=start
+	@: # Hide output
+	$(eval CMD=start)
 
 stop :
-	CMD=stop
+	@: # Hide ouput
+	$(eval CMD=stop)
 
 remove :
-	CMD=remove
+	@: # Hide output
+	$(eval CMD=remove)
