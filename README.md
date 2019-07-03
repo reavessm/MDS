@@ -1,4 +1,4 @@
-# My Docker Scripts
+# MDS
 
 An init framework for homelab services.
 
@@ -15,8 +15,8 @@ MDS will then open the correct `mds.sh` script in your default editor.
 
 After creating the new service, typing `make <foo>` will build (if needed),
 start (if needed), and run the container.  You can also type 
-`make <foo> CMD=remove`, `make <foo> CMD=stop`, or `make <foo> CMD=start` to 
-remove, stop, and start the container respectively.
+`make remove <foo>`, `make stop <foo>`, or `make start <foo>` to remove, stop,
+and start the container respectively.
 
 MDS also automatically handles configuring an encrypted reverse proxy based on
 the 'enabled' services (enabled here means the directory ends with '.d').
@@ -51,7 +51,7 @@ Searching for a new contianer image
 1. Enjoy your services!
     * Everything should be in a directory called `<nameOfService>.d`, which points to 'https://<nameOfService>.domain.com'
     * If you want to point something to just 'domain.com' move it to the special website.d folder: 
-        1. Stop the service with `make CMD=stop service`
+        1. Stop the service with `make stop service`
         1. Rename the folder with `mv service.d website.d`
         1. Start it back up with `make website`
         1. Reset the proxy `make proxyReset`
@@ -65,4 +65,4 @@ Searching for a new contianer image
     * Optionally, you can change any of the other 'args'.  There are a lot of unnecessary '-e' flags, so have fun with that.
 1. exit vim ('<Esc>:wq', or '<Esc>:x', or '<Esc>ZZ')
 1. `make proxyReset`
-1. In a web browswer, go to 'nextcloud.domain.com'
+1. In a web browswer, go to 'http://nextcloud.domain.com'
