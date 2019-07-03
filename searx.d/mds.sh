@@ -22,6 +22,8 @@ conName="search"
 # You must specify a container image
 conImg="hoellen/searx"
 
+aliases="search"
+
 # Put the port you want to be made public to the load balancer
 exposedPort=8888
 
