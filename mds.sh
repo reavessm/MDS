@@ -49,7 +49,7 @@ function checkPorts() {
   awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
     read -r port
   do      
-    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $1}')"
+    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
   done
   } | column -t
 #}}}
