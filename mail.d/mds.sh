@@ -22,6 +22,9 @@ conName="mail"
 # Put the port you want to be made public to the load balancer
 exposedPort=8094
 
+# Allow embedding in NextCloud
+proxySettings="proxy_hide_header X-Frame-Options;"
+
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space
 args="-d"
