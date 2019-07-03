@@ -26,22 +26,22 @@ exposedPort=8094
 # EXCEPT for the first one start with a space
 args="-d"
 
-function superRun() {
-  docker-compose -p mailu up -d
+function run() {
+  print "$(docker-compose -p mailu up -d 2>&1)"
+}
+
+function start() {
+  print "$(docker-compose -p mailu up -d 2>&1)"
 }
 
 function stop() {
-  docker-compose -p mailu stop
+  printYellow "$(docker-compose -p mailu stop 2>&1)"
 }
 
 function superRemove() {
-  docker-compose -p mailu rm
+  printRed "$(docker-compose -p mailu rm 2>&1)"
 }
 
-function restart() {
-  stop
-  superRun
-}
 
 function deleteUser {
   read -p "Please enter the mail account name to delete (<name>@reaves.dev): "\
