@@ -66,3 +66,7 @@ stop :
 remove :
 	@: # Hide output
 	$(eval CMD=remove)
+
+run :
+	@: # Hide output
+	$(eval CMD=run)
