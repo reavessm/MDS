@@ -70,3 +70,10 @@ remove :
 run :
 	@: # Hide output
 	$(eval CMD=run)
+
+# Try running anything as command
+# This allows us to run 'make customFunction service' instead of 
+# 'make CMD=customFunction service' on an abstract level
+% :
+	@: # Hide output
+	$(eval CMD=$@)

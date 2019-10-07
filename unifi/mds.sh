@@ -17,13 +17,15 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name
-#conName="unifi-controller"
+conName="unifi-controller"
 
 # You must specify a container image
 #conImg="linuxserver/unifi-controller"
 
 # Put the port you want to be made public to the load balancer
 exposedPort=8443
+
+private=true
 
 useHTTPS=true
 
@@ -43,6 +45,23 @@ conIP=192.168.0.99
 #args+=" -p 8880:8880"
 #args+=" -p 6789:6789"
 #args+=" -v <path to data>:/config"
+
+# Ovewrite these methods for vms not managed in MDS
+function run() {
+  print "$conName is not managed by MDS"
+}
+
+function stop() {
+  print "$conName is not managed by MDS"
+}
+
+function remove() {
+  print "$conName is not managed by MDS"
+}
+
+function start() {
+  print "$conName is not managed by MDS"
+}
 
 # Run args.  Do not delete this deceptively simple command
 $1
