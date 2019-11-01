@@ -50,7 +50,7 @@ proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
 
 # Set this to a comma separated list of alternative subdomains that you like to
 # point to this service
-aliases="calibre,ebook,kindle"
+aliases="calibre,ebook,kindle,read"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
