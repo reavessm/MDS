@@ -425,6 +425,44 @@ function proxyReset() {
 #}}}
 }
 
+function status() {
+  text="$(docker ps | awk "{found = 0; up = 0}
+  /$conName/ {found = 1}
+  /Up/ {up = 1}
+  {
+    if (found)
+    {
+      if (up)
+      {
+        print \"$conName is running\"
+        exit
+      }
+      else
+      {
+        print \"$conName is starting\"
+        exit
+      }
+    }
+  }
+  END {
+    if (!found)
+    {
+      print \"$conName is down\"
+    }
+  }")"
+  case "$(echo "$text" | awk '{print $3}')" in
+    "running")
+      print "$text"
+      ;;
+    "starting")
+      printYellow "$text"
+      ;;
+    *)
+      printRed "$text"
+      ;;
+  esac
+}
+
 # Only allow certain options
 #{{{
 [ "$1" == "new" ] && new || true
