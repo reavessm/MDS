@@ -59,17 +59,30 @@ function checkPorts() {
   } | column -t
 #}}}
 }
+
+function getNextPort() {
+#{{{
+  awk -F '=' 'BEGIN {max=0}
+  {
+    if ($1 == "exposedPort")
+      { 
+        max = (max > $2 ? max : $2);
+      }
+  }
+  END {print max+1}' ./*.d/mds.sh
+#}}}
+}
+
 # This function lists all the aliases currently in use
 function checkAliases() {
 #{{{
-  printRed "This feature is not yet implemented..."
-#  {
-#  awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
-#    read -r port
-#  do      
-#    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
-#  done
-#  } | column -t
+  {
+  awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
+    read -r port
+  do      
+    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
+  done
+  } | column -t
 #}}}
 }
 
@@ -261,8 +274,9 @@ conImg="$img"
 # Uncomment this if you want this name resolvable ONLY on the LAN
 #private=true
 
-# Put the port you want to be made public to the load balancer.
-#exposedPort=8082
+# Put the port you want to be made public to the load balancer. This should be
+# the next open port, but you can verify this with 'make checkPorts'
+#exposedPort=$(getNextPort)
 
 # Additional proxy settings, to be copied as-is into proxy
 #proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
@@ -531,4 +545,5 @@ function shell() {
 [ "$1" == "search" ] && search || true
 [ "$1" == "checkPorts" ] && checkPorts || true
 [ "$1" == "proxyReset" ] && proxyReset || true
+[ "$1" == "getNextPort" ] && getNextPort || true
 #}}}
