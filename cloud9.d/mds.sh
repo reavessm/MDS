@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ###############################################################################
-# My Docker Script                                                            #
+# MDS                                                                         #
 # Written by: Stephen Reaves                                                  #
 #                                                                             #
-# Every Docker container should have it's own dir with the '.d' suffix.       #
+# Every service should have it's own dir with the '.d' suffix.                #
 # Inside that dir, there should be mds.sh script that defines variables like  #
 # the image.  From there, this script should handle docker builds, runs, etc. #
 #                                                                             #
@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="dokuwiki"
+conName="cloud9"
 
 # You must specify a container image.
-conImg="bitnami/dokuwiki"
+conImg="linuxserver/cloud9:go"
 
 # If your container does not need a separate DB or network, leave these
 # commented out.
@@ -37,9 +37,12 @@ conImg="bitnami/dokuwiki"
 #private=true
 
 # Put the port you want to be made public to the load balancer.
-exposedPort=8098
+exposedPort=8000
 
-aliases="docs,wiki"
+# Additional proxy settings, to be copied as-is into proxy
+#proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
+#proxySettings+="foo;"
+#proxySettings+="bar;"
 
 # Put the IP of the host of the vm if not managed by MDS.
 # Normally, it's safe to ignore this.
@@ -51,22 +54,21 @@ aliases="docs,wiki"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
-if [ -z "`docker ps -a | awk '{print $NF}' | grep -x $conName`" ]
-then
-  read -p "Please enter $conName username: " username
-  read -s -p "Please enter $conName password: " password \
-    && echo
-fi
+#if [ -z "$(docker ps -a | awk '{print $NF}' | grep -x $conName\)" ]
+#then
+#  read -p "Please enter $conName username: " username
+#  read -s -p "Please enter $conName password: " password \
+#    && echo
+#fi
 
-# These are the args passed to the `docker run` command.  Make sure all args
+# These are the args passed to the $(docker run\) command.  Make sure all args
 # EXCEPT for the first one start with a space.
 args="-d"
 args+=" --restart unless-stopped"
-args+=" -p 8098:80"
-args+=" -v /mnt/VMStorage/DokuWiki:/bitnami"
-args+=" -e DOKUWIKI_USERNAME=${username}"
-args+=" -e DOKUWIKI_PASSWORD=${password}"
-args+=" -e DOKUWIKI_WIKI_NAME=Homelab"
+args+=" -p 8000:8000"
+args+=" -e PUID=1001"
+args+=" -e PGID=1001"
+#args+=" -v /code:/code"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"
@@ -75,29 +77,30 @@ args+=" -e DOKUWIKI_WIKI_NAME=Homelab"
 #args+=" -e KEYCLOAK_USER=$username"
 #args+=" -e KEYCLOAK_PASSWORD=$password"
 
-# These are the args passed to the `docker run` command for the DB, if conDB is
+# These are the args passed to the $(docker run\) command for the DB, if conDB is
 # not blank.  Make sure all args EXCEPT for the first one start with a space.
 #dbArgs="-d"
 #dbArgs+=" --net $conNet"
+#dbArgs+=" --restart unless-stopped
 #dbArgs+=" -e MYSQL_ROOT_PASSWORD=password"
 #dbArgs+=" -e MYSQL_PASSWORD=password"
 #dbArgs+=" -e MYSQL_USER=keycloak"
 #dbArgs+=" -e MYSQL_DATABASE=keycloak"
 
-# Uncomment this to run commands before the `docker run` command.  These
+# Uncomment this to run commands before the $(docker run\) command.  These
 # commands will run only on the first run.
 #function preconfig() {
 #  print "Doing something before run ..."
 #  echo Something
-#  printRed "Done something for $conName!"
+#  printYellow "Done something for $conName!"
 #}
 
-# Uncomment this to run commands after the `docker run` command.  These
+# Uncomment this to run commands after the $(docker run\) command.  These
 # commands will run only on the first run.
 #function postconfig() {
 #  print "Doing after before run ..."
 #  echo Something
-#  printRed "Done something for $conName!"
+#  printYellow "Done something for $conName!"
 
 # Ovewrite these methods for vms not managed in MDS.  The proxy will still
 # point to the service, but will not create it.  This is normally used with the

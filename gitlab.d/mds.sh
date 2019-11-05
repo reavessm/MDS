@@ -22,6 +22,9 @@ conName="gitlab"
 # You must specify a container image
 conImg="gitlab/gitlab-ce"
 
+# Optionally, you may specify a shell
+conShell="/bin/dash"
+
 # Allow embedding in iframe for nextcloud
 proxySettings="proxy_hide_header X-Frame-Options;"
 
