@@ -9,14 +9,19 @@
 # the image.  From there, this script should handle docker builds, runs, etc. #
 ###############################################################################
 
+# Default variables
+#{{{
 conDB=""
 conNet=""
 conImg=""
 conName=""
 conDBImg=""
+needsUpgrade=0
+conShell="/bin/bash"
 declare -a args
 declare -a dbArgs
 hostIP="$(ip route get 1 | awk '{print $(NF-2);exit}')"
+#}}}
 
 function print() {
 #{{{
@@ -52,6 +57,19 @@ function checkPorts() {
     echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
   done
   } | column -t
+#}}}
+}
+# This function lists all the aliases currently in use
+function checkAliases() {
+#{{{
+  printRed "This feature is not yet implemented..."
+#  {
+#  awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
+#    read -r port
+#  do      
+#    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
+#  done
+#  } | column -t
 #}}}
 }
 
@@ -426,6 +444,7 @@ function proxyReset() {
 }
 
 function status() {
+#{{{
   text="$(docker ps | awk "{found = 0; up = 0}
   /$conName/ {found = 1}
   /Up/ {up = 1}
@@ -461,6 +480,48 @@ function status() {
       printRed "$text"
       ;;
   esac
+#}}}
+}
+
+function update() {
+#{{{
+  printYellow "$conName is updating ..."
+  out="$(docker pull "$conImg")"
+  if [[ $out == *"up to date"* ]]
+  then
+    print "$conName is up to date!"
+  else
+    printYellow "$conName was  updated"
+    needsUpgrade=1
+  fi
+#}}}
+}
+
+function upgrade() {
+#{{{
+  update
+  if (( needsUpgrade == 1))
+  then
+    remove
+    run
+  fi
+#}}}
+}
+
+function logs() {
+#{{{
+  printYellow "Printing logs for $conName ... <++>"
+  docker container logs "$conName"
+  print "Done printing logs for $conName! <-->"
+#}}}
+}
+
+function shell() {
+#{{{
+  printYellow "Entering $conName shell ($conShell) ..."
+  docker container exec -it "$conName" "$conShell"
+  print "Exiting $conName shell"
+#}}}
 }
 
 # Only allow certain options
