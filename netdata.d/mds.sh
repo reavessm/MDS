@@ -23,12 +23,12 @@ conName="netdata"
 conImg="netdata/netdata"
 
 # Put the port you want to be made public to the load balancer
-exposedPort=19999
+exposedPort=9093
 
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space
 args="-d"
-args+=" -p 19999:19999"
+args+=" -p 9093:19999"
 args+=" -v /proc:/host/proc:ro"
 args+=" -v /sys:/host/sys:ro"
 args+=" -v /var/run/docker.sock:/var/run/docker.sock:ro"
