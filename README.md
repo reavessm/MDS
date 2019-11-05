@@ -41,6 +41,10 @@ Searching for a new contianer image
 
 ![make search](screenshots/makeSearch.png) 
 
+Upgrading several containers in parellel
+
+![make -j upgrade](screenshots/mdsUpgrade.PNG)
+
 ## Examples
 
 ### Starting from Scratch
