@@ -9,9 +9,9 @@
 
 usage :
 ifneq (,$(wildcard /usr/bin/cowsay))
-	@cowsay "Run 'make init' to begin creating a service. Then, run 'make <servicename>' to start that service, or 'make all' to start all services."
+	@cowsay "Run 'make init' or 'make search' to begin creating a service. Then, run 'make <servicename>' to start that service, or 'make all' to start all services."
 else
-	@echo "Run 'make init' to begin creating a service. \
+	@echo "Run 'make init' or 'make search' to begin creating a service. \
 Then, run 'make <servicename>' to start that service, or \
 'make all' to start all services." 
 endif
