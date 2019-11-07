@@ -17,7 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="alpinelinux3.8"
+conName="alpinelinux3.10.3"
+#conName="DummyNameThatSHouldNotExisInAnyCircumstance"
+
+isoPath="/mnt/ISOs"
 
 # These are the args passed to the `virt-install` command.  Make sure all args
 # EXCEPT for the first one start with a space.
@@ -30,7 +33,7 @@ args+=" --ram=512"
 args+=" --vcpu=2"
 args+=" --disk path=/var/lib/libvirt/images/$conName.img,bus=virtio,size=10"
 args+=" --graphics none"
-args+=" --cdrom /mnt/ISOs/alpine-virt-3.8.2-x86_64.iso"
+args+=" --cdrom /mnt/ISOs/$conName.iso"
 args+=" --network type=direct,source=enp37s0"
 
 function run() {
@@ -41,37 +44,55 @@ function run() {
 }
 
 function check() {
-  print "Checking to see if $conName is running"
+  printYellow "Checking to see if $conName iso exists"
+
+  if [ -f "$isoPath/$conName.iso" ]
+  then
+    print "$conName iso does exist!"
+  else
+    printYellow "Downloading for $conName ..."
+    wget "$(awk -F ',' "/$conName/ "'{print $3}' ../vmList.csv)" \
+      -O $isoPath/$conName.iso
+    if [ $? -eq 0 ]
+    then
+      print "Finished downloading $conName!"
+    else
+      printRed "Could not download for $conName ..."
+      return
+    fi
+  fi
+
+  printYellow "Checking to see if $conName is running"
   sudo virsh list | grep $conName >/dev/null \
-    && printYellow "$conName is already running" 
+    && print "$conName is already running" 
 }
 
 # TODO: Make variables for drivers and hostnames
 function connect() {
   start || return 
-  print "Connecting to $conName (Escape character it ^])"
+  printYellow "Connecting to $conName (Escape character it ^])"
   sudo virsh -q --connect qemu:///system console $conName
 }
 
 function start() {
   check && return
-  print "Starting $conName"
+  printYellow "Starting $conName ..."
   sudo virsh --connect qemu:///system start $conName &>/dev/null
 }
 
 function stop() {
-  print "Stopping $conName"
+  printYellow "Stopping $conName"
   sudo virsh shutdown $conName &>/dev/null
-  printYellow "Done"
+  print "Done"
 }
 
 function remove() {
   stop
 
-  print "Removing $conName"
+  printYellow "Removing $conName"
   sudo virsh destroy $conName &>/dev/null
   sudo virsh undefine $conName &>/dev/null
-  printYellow "Done"
+  print "Done"
 }
 
 # Run args.  Do NOT delete this deceptively simple command.
