@@ -34,5 +34,8 @@ dbArgs+=" -e MYSQL_USER=keycloak"
 dbArgs+=" -e MYSQL_DATABASE=keycloak"
 dbArgs+=" -v /mnt/VMStorage/Keycloak/Mysql:/var/lib/mysql"
 
+# Additional proxy settings, to be copied as-is into proxy
+proxySettings="proxy_set_header X-Firefox-Spdy     h2;"
+
 # run args
 $1

@@ -35,5 +35,8 @@ dbArgs+=" -e MYSQL_ROOT_PASSWORD=$password"
 dbArgs+=" -e MYSQL_USER=$username"
 dbArgs+=" -v /mnt/VMStorage/NextCloud/DB:/var/lib/mysql"
 
+# Additional proxy settings, to be copied as-is into proxy
+proxySettings="proxy_set_header X-Firefox-Spdy     h2;"
+
 # run args
 $1
