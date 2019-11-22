@@ -231,10 +231,11 @@ function new() {
     exit 1
   fi
 
-  print "Making directory '$name.d'"
+  printYellow "Making directory '$name.d'"
   mkdir -p "$name.d"
 
-  print "Making file '$name.d/mds.sh'"
+  printYellow "Making file '$name.d/mds.sh'"
+  conPort=$(getNextPort)
   cat > "$name".d/mds.sh << EOF
 #!/bin/bash
 
@@ -276,7 +277,7 @@ conImg="$img"
 
 # Put the port you want to be made public to the load balancer. This should be
 # the next open port, but you can verify this with 'make checkPorts'
-#exposedPort=$(getNextPort)
+#exposedPort=$conPort
 
 # Additional proxy settings, to be copied as-is into proxy
 #proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
@@ -311,7 +312,7 @@ dialog --prgbox "Pulling Image" "docker pull $img" 50 80
 for port in $(docker image inspect -f '{{.Config.ExposedPorts}}' "$img" \
   | sed 's/[^[:digit:][:space:]]//g')
 do
-  echo "args+=\" -p $port:$port\"" >> "$name".d/mds.sh
+  echo "args+=\" -p $conPort:$port\"" >> "$name".d/mds.sh
 done
 
 for vol in $(docker image inspect -f '{{.Config.Volumes}}' "$img" \
@@ -350,17 +351,18 @@ cat >> "$name".d/mds.sh << EOF
 # Uncomment this to run commands before the \$(docker run\) command.  These
 # commands will run only on the first run.
 #function preconfig() {
-#  print "Doing something before run ..."
+#  printYellow "Doing something before run ..."
 #  echo Something
-#  printYellow "Done something for \$conName!"
+#  print"Done something for \$conName!"
 #}
 
 # Uncomment this to run commands after the \$(docker run\) command.  These
 # commands will run only on the first run.
 #function postconfig() {
-#  print "Doing after before run ..."
+#  printYellow "Doing after before run ..."
 #  echo Something
-#  printYellow "Done something for \$conName!"
+#  print"Done something for \$conName!"
+#}
 
 # Ovewrite these methods for vms not managed in MDS.  The proxy will still
 # point to the service, but will not create it.  This is normally used with the
@@ -391,7 +393,7 @@ EOF
   # Open in editor
   ${EDITOR:-vim} "$name".d/mds.sh
 
-  printYellow "Done"
+  print "Done"
 #}}}
 }
 
@@ -535,6 +537,13 @@ function shell() {
   printYellow "Entering $conName shell ($conShell) ..."
   docker container exec -it "$conName" "$conShell"
   print "Exiting $conName shell"
+#}}}
+}
+
+function remStart() {
+#{{{
+  remove
+  run
 #}}}
 }
 
