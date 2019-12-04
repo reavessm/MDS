@@ -2,6 +2,6 @@ CentOS-7-DVD,CentOS 7 DVD iso,http://isoredirect.centos.org/centos/7/isos/x86_64
 FedoraServer-30,Standard Fedora Server iso,https://download.fedoraproject.org/pub/fedora/linux/releases/30/Server/x86_64/iso/Fedora-Server-dvd-x86_64-30-1.2.iso
 FedoraWorkStation-Live-30,Standard Fedora Workstation live iso,https://download.fedoraproject.org/pub/fedora/linux/releases/30/Workstation/x86_64/iso/Fedora-Workstation-Live-x86_64-30-1.2.iso
 FedoraWorkStation-NetInstall-30,Standard Fedora Workstation netinstall iso,https://download.fedoraproject.org/pub/fedora/linux/releases/30/Workstation/x86_64/iso/Fedora-Workstation-netinst-x86_64-30-1.2.iso
-Gentoo,Gentoo Minimal 2019-07-14,http://distfiles.gentoo.org/releases/amd64/autobuilds/20190714T214502Z/install-amd64-minimal-20190714T214502Z.iso
+gentoo,Gentoo Minimal 2019-07-14,http://distfiles.gentoo.org/releases/amd64/autobuilds/20190714T214502Z/install-amd64-minimal-20190714T214502Z.iso
 CentOS-8-Stream,CentOS 8 Stream DVD iso,http://isoredirect.centos.org/centos/8-stream/isos/x86_64/CentOS-Stream-x86_64-dvd1.iso
 alpinelinux3.10.3,Alpine Linux (Virt) 3.10.3,http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/x86_64/alpine-virt-3.10.3-x86_64.iso

@@ -24,9 +24,9 @@ exposedPort=9090
 
 # Put the IP of the host of the vm if not managed by MDS
 # Normally, it's safe to ignore this
-conIP=192.168.0.103
+conIP=192.168.0.3
 
-useHTTPS=true
+#useHTTPS=true
 
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space

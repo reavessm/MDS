@@ -14,4 +14,7 @@ Things to do
 1. Split out VM stuffs
     * look at `alpine` for an example
     * might be as simple as changing suffix from `.d` to `.v`?
+        * Don't forget about exposed ports with the proxy
+            * Handle multiple ports?
 1. Don't check if VM is running after we download it
+1. Create `dialog` script to create vm

@@ -19,6 +19,7 @@ var prompt string;
 func prepareArg(match [][]string) {
   arg   := match[0][1]
   value := match[1][2]
+
   switch arg {
     case `prompt`, `PS1`:
       prompt = value
@@ -46,7 +47,7 @@ func main() {
   }
 
   // Shell
-  for {
+  for/*ever*/ {
     // Read input
     input, err := reader.ReadString('\n')
     if err != nil {

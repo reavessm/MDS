@@ -33,6 +33,7 @@ args+=" -v /proc:/host/proc:ro"
 args+=" -v /sys:/host/sys:ro"
 args+=" -v /var/run/docker.sock:/var/run/docker.sock:ro"
 args+=" -e PGID=243"
+args+=" --hostname $conName.reaves.dev"
 args+=" --cap-add SYS_PTRACE"
 
 # Run args.  Do not delete this deceptively simple command

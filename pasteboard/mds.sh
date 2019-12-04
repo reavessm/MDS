@@ -17,10 +17,10 @@
 [ -f ../mds.sh ] && source ../mds.sh || exit 1
 
 # You must specify container name.
-conName="diaspora"
+conName="pasteboard"
 
 # You must specify a container image.
-conImg="koehn/diaspora"
+conImg="anthodingo/docker-pasteboard"
 
 # If your container does not need a separate DB or network, leave these
 # commented out.
@@ -36,8 +36,9 @@ conImg="koehn/diaspora"
 # Uncomment this if you want this name resolvable ONLY on the LAN
 #private=true
 
-# Put the port you want to be made public to the load balancer.
-exposedPort=9092
+# Put the port you want to be made public to the load balancer. This should be
+# the next open port, but you can verify this with 'make checkPorts'
+exposedPort=9094
 
 # Additional proxy settings, to be copied as-is into proxy
 #proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
@@ -51,7 +52,6 @@ exposedPort=9092
 # Set this to a comma separated list of alternative subdomains that you like to
 # point to this service
 #aliases="foo,bar"
-aliases="social"
 
 # Use this block to prompt for usernames and passwords, but only if there is
 # no container named conName.
@@ -66,9 +66,8 @@ aliases="social"
 # EXCEPT for the first one start with a space.
 args="-d"
 args+=" --restart unless-stopped"
-args+=" -p 9092:80"
-args+=" -v /mnt/VMStorage/Diaspora:/config"
-args+=" -e PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+args+=" -p 9094:3000"
+args+=" -v /mnt/VMStorage/Pasteboard:/pasteboard/public/storage/"
 
 # If you need to group things in a network:
 #args+=" --net $conNet"
@@ -89,11 +88,11 @@ args+=" -e PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Uncomment this to run commands before the $(docker run\) command.  These
 # commands will run only on the first run.
-function preconfig() {
-  print "Doing something before run ..."
-  #[ -z /mnt/VMStorage/Diaspora/config/
-  printYellow "Done something for $conName!"
-}
+#function preconfig() {
+#  print "Doing something before run ..."
+#  echo Something
+#  printYellow "Done something for $conName!"
+#}
 
 # Uncomment this to run commands after the $(docker run\) command.  These
 # commands will run only on the first run.

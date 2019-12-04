@@ -27,6 +27,8 @@ isoPath="/mnt/ISOs"
 args="-n $conName"
 args+=" --os-type=Linux"
 args+=" --os-variant=alpinelinux3.8"
+
+# Make all this stuff visible but default?
 args+=" --check all=off"
 args+=" --noreboot"
 args+=" --ram=512"
@@ -35,6 +37,9 @@ args+=" --disk path=/var/lib/libvirt/images/$conName.img,bus=virtio,size=10"
 args+=" --graphics none"
 args+=" --cdrom /mnt/ISOs/$conName.iso"
 args+=" --network type=direct,source=enp37s0"
+
+# Hide these in main mds.sh?  call it vds.sh?
+# Copy it all over from `make vm` script?
 
 function run() {
   connect && return

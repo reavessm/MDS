@@ -25,6 +25,8 @@ exposedPort=8094
 # Allow embedding in NextCloud
 proxySettings="proxy_hide_header X-Frame-Options;"
 
+aliases="email,webmail"
+
 # These are the args passed to the `docker run` command.  Make sure all args
 # EXCEPT for the first one start with a space
 args="-d"
