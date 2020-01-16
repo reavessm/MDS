@@ -21,7 +21,7 @@ CMD="run"
 DIR = $(wildcard *.d)
 TARGET = $(DIR:.d=)
 
-.PHONY: $(DIR) $(TARGET) new clean search restart
+.PHONY: $(DIR) $(TARGET) new clean search restart enable disable
 
 $(DIR) :
 	@(cd $@ && mds.sh $(CMD))
@@ -71,10 +71,9 @@ run :
 	@: # Hide output
 	$(eval CMD=run)
 
-remStart :
-	@: # Hide output
-	$(eval CMD=remove)
-	$(eval CMD=run)
+enable :
+	@:
+	$(eval CMD=enable)
 
 # Try running anything as command
 # This allows us to run 'make customFunction service' instead of 
@@ -82,6 +81,12 @@ remStart :
 % :
 	@: # Hide output
 	$(eval CMD=$@)
+
+remStart :
+	@: # Hide output
+	$(eval CMD=remStart)
+#	$(eval CMD=run)
+
 
 todo:
 	@vim TODO.md

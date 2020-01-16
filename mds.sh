@@ -47,6 +47,28 @@ function printYellow() {
 #}}}
 }
 
+# Enables services to run
+function enable() {
+#{{{
+  [ -d ../$conName ] && printYellow "$(mv -v ../$conName ../$conName.d | sed 's/\.\.\///g')"
+  #service=${1%/}
+  #service=${service%.d}
+  #printYellow "$(mv -v $service $service.d)"
+  print "Done!"
+#}}}
+}
+
+# Disables services from running
+function disable() {
+#{{{
+  [ -d ../$conName.d ] && printYellow "$(mv -v ../$conName.d ../$conName | sed 's/\.\.\///g')"
+  #service=${1%/}
+  #service=${service%.d}
+  #printYellow "$(mv -v $service.d $service)"
+  print "Done!"
+#}}}
+}
+
 # This function lists all the exposed ports currently in use
 function checkPorts() {
 #{{{
@@ -60,6 +82,7 @@ function checkPorts() {
 #}}}
 }
 
+# Finds the highest port in use, then adds one
 function getNextPort() {
 #{{{
   awk -F '=' 'BEGIN {max=0}
@@ -77,10 +100,10 @@ function getNextPort() {
 function checkAliases() {
 #{{{
   {
-  awk -F '=' '/^exposedPort/ {print $2}' ./*.d/mds.sh | sort -n | while \
-    read -r port
+  awk -F '=' '/^aliases/ {print $2}' ./*.d/mds.sh | sort -n | while \
+    read -r alias
   do      
-    echo -e "$port -> $(grep "$port" ./*.d/mds.sh | awk -F '/' '/exposedPort/ && !/#/ {print $2}')"
+    echo -e "$alias -> $(grep "$alias" ./*.d/mds.sh | awk -F '/' '/aliases/ && !/#/ {print $2}')"
   done
   } | column -t
 #}}}
@@ -88,7 +111,7 @@ function checkAliases() {
 
 function stop() {
 #{{{
-  print "Stopping $conName"
+  printYellow "Stopping $conName"
   docker stop "$conName" >/dev/null
 
   [ -n "$conDB" ] && print "Stopping $conDB"
@@ -96,7 +119,7 @@ function stop() {
 
   if [[ $(docker container inspect -f '{{.State.Running}}' "$conName") == 'false' ]]
   then
-    printYellow "$conName Stopped"
+    print "$conName Stopped"
   else
     printRed "X $conName did not stop"
   fi
@@ -108,12 +131,12 @@ function start() {
   [ -n "$conDB" ] && print "Starting $conDB"
   [ -n "$conDB" ] && docker start "$conDB" >/dev/null
 
-  print "Starting $conName"
+  printYellow "Starting $conName"
   docker start "$conName" >/dev/null
 
   if [[ $(docker container inspect -f '{{.State.Running}}' "$conName") == 'true' ]]
   then
-    printYellow "$conName Started"
+    print "$conName Started"
   else
     printRed "X $conName did not start"
   fi
@@ -131,13 +154,13 @@ function restart() {
 
 function superRemove() {
 #{{{
-  print "Removing $conName"
+  printYellow "Removing $conName"
   docker rm "$conName" >/dev/null
 
-  [ -n "$conDB" ] && print "Removing $conDB"
+  [ -n "$conDB" ] && printYellow "Removing $conDB"
   [ -n "$conDB" ] && docker rm $conDB >/dev/null 
 
-  [ -n "$conNet" ] && print "Removing $conNet network"
+  [ -n "$conNet" ] && printYellow "Removing $conNet network"
   [ -n "$conNet" ] && docker network rm $conNet >/dev/null
 #}}}
 }
@@ -149,21 +172,21 @@ function remove() {
 
   superRemove
 
-  printYellow "$conName Removed"
+  print "$conName Removed"
 #}}}
 }
 
 function check() {
 #{{{
-  docker ps -a | awk '{print $NF}' | grep -x $conName > /dev/null && print \
-    "$conName already exists" && start
+  docker ps -a | awk '{print $NF}' | grep -x $conName > /dev/null && \
+    printYellow "$conName already exists" && start
 #}}}
 }
 
 function build() {
 #{{{
   [ -f ./Dockerfile ] && docker build --no-cache -t $conName . && \
-    print "Building $conName"
+    printYellow "Building $conName"
 #}}}
 }
 
@@ -171,21 +194,21 @@ function build() {
 # Although they can't be really empty or bash yells at me
 function preconfig() { 
 #{{{
-  print "Nothing to do for preconfig"
+  printYellow "Nothing to do for preconfig"
 #}}}
 }
 function postconfig() { 
 #{{{
-  print "Nothing to do for postconfig"
+  printYellow "Nothing to do for postconfig"
 #}}}
 }
 
 function superRun() {
 #{{{
-  [ -n "$conNet" ] && print "Creating $conNet network"
+  [ -n "$conNet" ] && printYellow "Creating $conNet network"
   [ -n "$conNet" ] && docker network create $conNet >/dev/null 
 
-  [ -n "$conDB" ] && print "Starting $conDB"
+  [ -n "$conDB" ] && printYellow "Starting $conDB"
   [ -n "$conDB" ] && docker run --name "$conDB" $dbArgs "$conDBImg" >/dev/null
 
   print "Starting $conName"
@@ -193,7 +216,7 @@ function superRun() {
 #}}}
 }
 
-# Take care not to overwrite this function.  Overwrite 'run' instead
+# Take care not to overwrite this function.  Overwrite 'superRun' instead
 function run() {
 #{{{
   check
@@ -207,13 +230,14 @@ function run() {
 
   if [[ $(docker container inspect -f '{{.State.Running}}' $conName) == 'true' ]]
   then
-    printYellow "$conName is Running!"
+    print "$conName is Running!"
   else
     printRed "X $conName did not start"
   fi
 #}}}
 }
 
+# Handles creating new services
 function new() {
 #{{{
   if [ $# != 2 ] 
@@ -261,6 +285,10 @@ conName="$name"
 # You must specify a container image.
 conImg="$img"
 
+# Put the port you want to be made public to the load balancer. This should be
+# the next open port, but you can verify this with 'make checkPorts'
+exposedPort=$conPort
+
 # If your container does not need a separate DB or network, leave these
 # commented out.
 #conDB="\$conName-DB"
@@ -274,10 +302,6 @@ conImg="$img"
 
 # Uncomment this if you want this name resolvable ONLY on the LAN
 #private=true
-
-# Put the port you want to be made public to the load balancer. This should be
-# the next open port, but you can verify this with 'make checkPorts'
-#exposedPort=$conPort
 
 # Additional proxy settings, to be copied as-is into proxy
 #proxySettings="proxy_set_header X-Script-Name     /calibre-web;"
@@ -353,7 +377,7 @@ cat >> "$name".d/mds.sh << EOF
 #function preconfig() {
 #  printYellow "Doing something before run ..."
 #  echo Something
-#  print"Done something for \$conName!"
+#  print "Done something for \$conName!"
 #}
 
 # Uncomment this to run commands after the \$(docker run\) command.  These
@@ -361,7 +385,7 @@ cat >> "$name".d/mds.sh << EOF
 #function postconfig() {
 #  printYellow "Doing after before run ..."
 #  echo Something
-#  print"Done something for \$conName!"
+#  print "Done something for \$conName!"
 #}
 
 # Ovewrite these methods for vms not managed in MDS.  The proxy will still
@@ -397,6 +421,7 @@ EOF
 #}}}
 }
 
+# Searches for and downloads new containers
 function search() {
 #{{{
   tmp="/tmp/MDS-tmp"
@@ -425,9 +450,12 @@ function search() {
   else
     new $(awk '{print $0,$0}' $newTmp) 2>/dev/null
   fi
+
+  rm $tmp $newTmp
 #}}}
 }
 
+# Creates news services and starts the proxy
 function init() {
 #{{{
   dialog --stdout --yesno 'Would you like to add containers now?' 0 0
@@ -450,6 +478,7 @@ function init() {
 #}}}
 }
 
+# Udpates proxy settings
 function proxyReset() {
 #{{{
   (cd proxy.d && autoconfig.sh)
@@ -459,6 +488,7 @@ function proxyReset() {
 #}}}
 }
 
+# Check if service is running
 function status() {
 #{{{
   text="$(docker ps | awk "{found = 0; up = 0}
@@ -499,20 +529,22 @@ function status() {
 #}}}
 }
 
+# Downloads updated services
 function update() {
 #{{{
-  printYellow "$conName is updating ..."
+  printYellow "checking updates for $conName ..."
   out="$(docker pull "$conImg")"
   if [[ $out == *"up to date"* ]]
   then
     print "$conName is up to date!"
   else
-    printYellow "$conName was  updated"
+    printYellow "$conName is updating ..."
     needsUpgrade=1
   fi
 #}}}
 }
 
+# Removes the container, starts with updated version
 function upgrade() {
 #{{{
   update
@@ -520,10 +552,12 @@ function upgrade() {
   then
     remove
     run
+    print "$conName was updated"
   fi
 #}}}
 }
 
+# Show logs
 function logs() {
 #{{{
   printYellow "Printing logs for $conName ... <++>"
@@ -532,6 +566,7 @@ function logs() {
 #}}}
 }
 
+# Puts you in a shell of the service
 function shell() {
 #{{{
   printYellow "Entering $conName shell ($conShell) ..."
@@ -540,6 +575,7 @@ function shell() {
 #}}}
 }
 
+# A sad attempt at trying to remove and restart a container
 function remStart() {
 #{{{
   remove
@@ -549,10 +585,13 @@ function remStart() {
 
 # Only allow certain options
 #{{{
-[ "$1" == "new" ] && new || true
-[ "$1" == "init" ] && init || true
-[ "$1" == "search" ] && search || true
-[ "$1" == "checkPorts" ] && checkPorts || true
-[ "$1" == "proxyReset" ] && proxyReset || true
-[ "$1" == "getNextPort" ] && getNextPort || true
-#}}}
+[ "$1" == "new" ] || \
+[ "$1" == "init" ] || \
+[ "$1" == "search" ] || \
+[ "$1" == "upgrade" ] || \
+[ "$1" == "remStart" ] || \
+[ "$1" == "checkPorts" ] || \
+[ "$1" == "proxyReset" ] || \
+[ "$1" == "getNextPort" ] || \
+[ "$1" == "checkAliases" ] \
+&& $1 || true
