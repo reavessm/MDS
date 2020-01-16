@@ -6,7 +6,7 @@ conName="nextcloud"
 conDB="$conName-DB"
 conNet="$conName-net"
 
-conImg="nextcloud"
+conImg="nextcloud:18-rc"
 conDBImg="mariadb"
 
 exposedPort=8081
@@ -25,7 +25,7 @@ args+=" --net $conNet"
 args+=" -e NEXTCLOUD_ADMIN_USER=$username"
 args+=" -e NEXTCLOUD_ADMIN_PASSWORD=$password"
 args+=" -p 8081:80"
-args+=" -v /mnt/VMStorage/NextCloud:/var/www/html/data"
+args+=" -v /mnt/VMStorage/NextCloud/html:/var/www/html"
 args+=" -v /etc/localtime:/etc/localtime:ro"
 
 dbArgs="-d"
@@ -36,7 +36,7 @@ dbArgs+=" -e MYSQL_USER=$username"
 dbArgs+=" -v /mnt/VMStorage/NextCloud/DB:/var/lib/mysql"
 
 # Additional proxy settings, to be copied as-is into proxy
-proxySettings="proxy_set_header X-Firefox-Spdy     h2;"
+#proxySettings="proxy_set_header X-Firefox-Spdy     h2;"
 
 # run args
 $1
