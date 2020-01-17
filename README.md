@@ -41,6 +41,10 @@ Searching for a new contianer image
 
 ![make search](screenshots/makeSearch.png) 
 
+Upgrading several containers in parellel
+
+![make -j upgrade \<service\>](screenshots/mdsUpgrade.PNG)
+
 ## Examples
 
 ### Starting from Scratch
@@ -49,7 +53,7 @@ Searching for a new contianer image
 1. `make init`
 1. Follow the prompts, changing variables as needed
 1. Enjoy your services!
-    * Everything should be in a directory called `<nameOfService>.d`, which points to 'https://<nameOfService>.domain.com'
+    * Everything should be in a directory called `<nameOfService>.d`, which points to 'https://\<nameOfService\>.domain.com'
     * If you want to point something to just 'domain.com' move it to the special website.d folder: 
         1. Stop the service with `make stop service`
         1. Rename the folder with `mv service.d website.d`

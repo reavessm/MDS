@@ -37,12 +37,13 @@ for sub in $subs
 do
   name="$(echo "${sub}" | cut -d ':' -f1)"
   port="$(echo "${sub}" | cut -d ':' -f2)"
-  if [[ -f ../"${name}".d/mds.sh && "$(grep -q conIP ../"${name}".d/mds.sh \
-    | grep -qv '#')" ]]
+  #if [[ -f ../"${name}".d/mds.sh && "$(grep -e '^conIP' ../"${name}".d/mds.sh \
+  #  | grep -qv '#')" ]]
+  if [[ -f ../"${name}".d/mds.sh && "$(awk '/^conIP/' ../"${name}".d/mds.sh)" ]]
   then
     cat >> "$file" <<EOF
 upstream ${name}_server {
-  server $(awk -F '=' '/conIP/ {print $2}' ../"${name}".d/mds.sh):"${port}";
+  server $(awk -F '=' '/conIP/ {print $2}' ../"${name}".d/mds.sh):${port};
 }
 
 EOF
