@@ -601,8 +601,8 @@ function remStart() {
 [ "$1" == "search" ] || \
 [ "$1" == "upgrade" ] || \
 [ "$1" == "remStart" ] || \
-[ "$1" == "checkPorts" ] || \
+[ "$1" == "checkAliases" ] \
 [ "$1" == "proxyReset" ] || \
 [ "$1" == "getNextPort" ] || \
-[ "$1" == "checkAliases" ] \
+[ "$1" == "checkPorts" ] || \
 && $1 || true
