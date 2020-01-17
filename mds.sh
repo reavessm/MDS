@@ -40,6 +40,7 @@ function printRed() {
 }
 
 function clean() {
+#{{{
   for f in *
   do
     if [ -d $f ]
@@ -47,6 +48,7 @@ function clean() {
       [[ $f != "proxy.d" ]] && rm -rf $f
     fi
   done
+#}}}
 }
 
 function printYellow() {
