@@ -9,9 +9,9 @@
 
 usage :
 ifneq (,$(wildcard /usr/bin/cowsay))
-	@cowsay "Run 'make init' to begin creating a service. Then, run 'make <servicename>' to start that service, or 'make all' to start all services."
+	@cowsay "Run 'make init' or 'make search' to begin creating a service. Then, run 'make <servicename>' to start that service, or 'make all' to start all services."
 else
-	@echo "Run 'make init' to begin creating a service. \
+	@echo "Run 'make init' or 'make search' to begin creating a service. \
 Then, run 'make <servicename>' to start that service, or \
 'make all' to start all services." 
 endif
@@ -21,7 +21,7 @@ CMD="run"
 DIR = $(wildcard *.d)
 TARGET = $(DIR:.d=)
 
-.PHONY: $(DIR) $(TARGET) new clean search restart
+.PHONY: $(DIR) $(TARGET) new clean search restart enable disable
 
 $(DIR) :
 	@(cd $@ && mds.sh $(CMD))
@@ -71,3 +71,23 @@ remove :
 run :
 	@: # Hide output
 	$(eval CMD=run)
+
+enable :
+	@:
+	$(eval CMD=enable)
+
+# Try running anything as command
+# This allows us to run 'make customFunction service' instead of 
+# 'make CMD=customFunction service' on an abstract level
+% :
+	@: # Hide output
+	$(eval CMD=$@)
+
+remStart :
+	@: # Hide output
+	$(eval CMD=remStart)
+#	$(eval CMD=run)
+
+
+todo:
+	@vim TODO.md
