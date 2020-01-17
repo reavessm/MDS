@@ -85,7 +85,7 @@ function checkPorts() {
 # Finds the highest port in use, then adds one
 function getNextPort() {
 #{{{
-  awk -F '=' 'BEGIN {max=0}
+  awk -F '=' 'BEGIN {max=8080}
   {
     if ($1 == "exposedPort")
       { 
@@ -455,7 +455,7 @@ function search() {
 #}}}
 }
 
-# Creates news services and starts the proxy
+# Creates new services and starts the proxy
 function init() {
 #{{{
   dialog --stdout --yesno 'Would you like to add containers now?' 0 0
