@@ -45,6 +45,40 @@ Upgrading several containers in parellel
 
 ![make -j upgrade \<service\>](screenshots/mdsUpgrade.PNG)
 
+## Functions
+
+Here is a list of all of the functions available to MDS
+
+* print() 
+* printRed() 
+* printYellow() 
+* enable() 
+* disable() 
+* checkPorts() 
+* getNextPort() 
+* checkAliases() 
+* stop() 
+* start() 
+* restart() 
+* superRemove() 
+* remove() 
+* check() 
+* build() 
+* preconfig()  
+* postconfig()  
+* superRun() 
+* run() 
+* new() 
+* search() 
+* init() 
+* proxyReset() 
+* status() 
+* update() 
+* upgrade() 
+* logs() 
+* shell() 
+* remStart() 
+
 ## Examples
 
 ### Starting from Scratch
